@@ -27,7 +27,7 @@ public class Stock {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "book_id", unique = true, nullable = false) // Chiave esterna verso Book
+    @JoinColumn(name = "book_id", unique = true, nullable = false)
     private Book book;
 
     @Column(name="totale_copie", columnDefinition = "int default 1", nullable = false)
