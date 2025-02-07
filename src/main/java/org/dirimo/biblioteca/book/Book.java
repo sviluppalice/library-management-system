@@ -31,25 +31,25 @@ public class Book {
     @JoinColumn(name = "shelf_id") // FK in Book punta a shelf
     private Shelf shelf;
 
-    @Column(name="isbn_ean", nullable=false, length=13)
+    @Column(name = "isbn_ean", nullable = false, length = 13)
     private Long codISBN;
 
-    @Column(name="titolo", nullable=false)
+    @Column(name = "titolo", nullable = false)
     private String title;
 
-    @Column(name="autore", nullable=false)
+    @Column(name = "autore", nullable = false)
     private String author;
 
-    @Column(name="anno", nullable=false, length=4)
+    @Column(name = "anno", nullable = false, length = 4)
     private Long year;
 
-    @Column(name="genere", nullable=false)
+    @Column(name = "genere", nullable = false)
     private String genre;
 
-    @Column(name="casa_editrice", nullable=false)
+    @Column(name = "casa_editrice", nullable = false)
     private String publisher;
 
-    @Column(name="lingua", nullable=false)
+    @Column(name = "lingua", nullable = false)
     private String language;
 
 }
