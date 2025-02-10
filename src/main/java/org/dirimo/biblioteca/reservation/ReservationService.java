@@ -2,7 +2,6 @@ package org.dirimo.biblioteca.reservation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -28,13 +27,10 @@ public class ReservationService {
     }
 
     // Update a reservation
-    public Reservation updateReservation(Long id, Reservation reservationDetails) {
-        return reservationRepository.findById(id).map( reservation -> {
-            reservation.setCustomer(reservationDetails.getCustomer());
-            reservation.setReservationDate(reservationDetails.getReservationDate());
-            reservation.setBook(reservationDetails.getBook());
-            return reservationRepository.save(reservation);
-        }).orElseThrow(() -> new RuntimeException("Reservation not found with ID: " + id));
+    public Reservation updateReservation(Long id, Reservation reservation) {
+        reservationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Prenotazione con id: " + id + " non trovata"));
+        return reservationRepository.save(reservation);
     }
 
     // Delete a reservation by ID

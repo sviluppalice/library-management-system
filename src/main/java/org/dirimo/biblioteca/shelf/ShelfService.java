@@ -28,12 +28,10 @@ public class ShelfService {
     }
 
     // Update a shelf
-    public Shelf updateShelf(Long id, Shelf shelfDetails) {
-        return shelfRepository.findById(id).map( shelf -> {
-            shelf.setBooks(shelfDetails.getBooks());
-            shelf.setZone(shelfDetails.getZone());
-            return shelfRepository.save(shelf);
-        }).orElseThrow(() -> new RuntimeException("Shelf not found with ID: " + id));
+    public Shelf updateShelf(Long id, Shelf shelf) {
+        shelfRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Scaffale con id: " + id + " non trovato."));
+        return shelfRepository.save(shelf);
     }
 
     // Delete a shelf by ID

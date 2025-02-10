@@ -30,17 +30,10 @@ public class BookService {
     }
 
     // Update a book
-    public Book updateBook(Long id, Book bookDetails) {
-        return bookRepository.findById(id).map(book -> {
-            book.setTitle(bookDetails.getTitle());
-            book.setAuthor(bookDetails.getAuthor());
-            book.setCodISBN(bookDetails.getCodISBN());
-            book.setYear(bookDetails.getYear());
-            book.setGenre(bookDetails.getGenre());
-            book.setPublisher(bookDetails.getPublisher());
-            book.setLanguage(bookDetails.getLanguage());
-            return bookRepository.save(book);
-        }).orElseThrow(() -> new RuntimeException("Book not found with ID: " + id));
+    public Book updateBook(Long id, Book book) {
+        bookRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Libro con ID: " + id + " non trovato."));
+        return bookRepository.save(book);
     }
 
     // Delete a book by ID

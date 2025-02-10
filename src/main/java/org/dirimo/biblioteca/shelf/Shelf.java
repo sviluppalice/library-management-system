@@ -33,7 +33,6 @@ public class Shelf {
     private List<Book> books;
 
     @ManyToOne
-    @JoinColumn(name = "zone_id")//FK in shelf punta a zona
+    @JoinColumn(name = "zone_id")
     private Zone zone;
-
 }

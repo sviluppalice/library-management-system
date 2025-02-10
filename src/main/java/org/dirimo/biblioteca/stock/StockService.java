@@ -27,13 +27,10 @@ public class StockService {
     }
 
     //Update a stock
-    public Stock updateStock(Long id, Stock stockDetails) {
-        return stockRepository.findById(id).map(stock -> {
-            stock.setBook(stockDetails.getBook());
-            stock.setTotal_copies(stockDetails.getTotal_copies());
-            stock.setAvailable_copies(stockDetails.getAvailable_copies());
-            return stockRepository.save(stock);
-        }).orElseThrow(() -> new RuntimeException("Stock not found with ID: " + id));
+    public Stock updateStock(Long id, Stock stock) {
+        return stockRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Stock con ID: " + id));
+        return stockRepository.save(stock);
     }
 
     // Delete a stock

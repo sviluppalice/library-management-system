@@ -30,11 +30,10 @@ public class ZoneService {
     }
 
     // Update a zone
-    public Zone updateZone(Long id, Zone zoneDetails) {
-        return zoneRepository.findById(id).map(zone -> {
-            zone.setName(zoneDetails.getName());
-            return zoneRepository.save(zone);
-        }).orElseThrow(() -> new RuntimeException("Zone not found with id: " + id));
+    public Zone updateZone(Long id, Zone zone) {
+        zoneRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Zona con id: " + id + " non trovata."));
+        return zoneRepository.save(zone);
     }
 
     //Delete a zone
