@@ -16,7 +16,7 @@ import org.dirimo.biblioteca.book.Book;
 import java.time.LocalDate;
 
 @Entity
-@Table(name="Stocks")
+@Table(name="Reservations")
 @Getter
 @Setter
 @NoArgsConstructor

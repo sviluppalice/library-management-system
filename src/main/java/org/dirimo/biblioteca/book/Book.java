@@ -28,7 +28,7 @@ public class Book {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "shelf_id") // FK in Book punta a shelf
+    @JoinColumn(name = "shelf_id")
     private Shelf shelf;
 
     @Column(name = "isbn_ean", nullable = false, length = 13)

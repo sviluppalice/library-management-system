@@ -16,7 +16,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/zone")
+@RequestMapping("api/zones")
 public class ZoneController {
 
     private final ZoneService zoneService;

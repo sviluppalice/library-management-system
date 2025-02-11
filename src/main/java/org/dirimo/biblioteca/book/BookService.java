@@ -32,7 +32,8 @@ public class BookService {
     // Update a book
     public Book updateBook(Long id, Book book) {
         bookRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Libro con ID: " + id + " non trovato."));
+            .orElseThrow(() -> new RuntimeException("Libro con ID: " + id + " non trovato."));
+        book.setId(id);
         return bookRepository.save(book);
     }
 

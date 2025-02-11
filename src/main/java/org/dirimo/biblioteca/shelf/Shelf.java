@@ -1,5 +1,6 @@
 package org.dirimo.biblioteca.shelf;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,6 +31,7 @@ public class Shelf {
     private Long id;
 
     @OneToMany(mappedBy = "shelf")
+    @JsonIgnore
     private List<Book> books;
 
     @ManyToOne

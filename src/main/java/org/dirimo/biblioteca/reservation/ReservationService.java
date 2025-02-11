@@ -30,6 +30,7 @@ public class ReservationService {
     public Reservation updateReservation(Long id, Reservation reservation) {
         reservationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Prenotazione con id: " + id + " non trovata"));
+        reservation.setId(id);
         return reservationRepository.save(reservation);
     }
 

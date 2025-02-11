@@ -1,7 +1,10 @@
 package org.dirimo.biblioteca.stock;
 
 import lombok.RequiredArgsConstructor;
+import org.dirimo.biblioteca.book.Book;
+import org.dirimo.biblioteca.book.BookRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +13,7 @@ import java.util.Optional;
 public class StockService {
 
     private final StockRepository stockRepository;
+    private final BookRepository bookRepository;
 
     // Get all stocks
     public List<Stock> getAllStocks() {
@@ -23,6 +27,12 @@ public class StockService {
 
     // Add a new stock
     public Stock saveStock(Stock stock) {
+        Long bookId = stock.getBook().getId();
+        Book wholeBook = bookRepository.findById(bookId)
+                .orElseThrow(() -> new RuntimeException("Libro con Id " + bookId + " non trovato"));
+
+        stock.setBook(wholeBook);
+
         return stockRepository.save(stock);
     }
 
@@ -30,6 +40,7 @@ public class StockService {
     public Stock updateStock(Long id, Stock stock) {
         stockRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Stock con ID: " + id));
+        stock.setId(id);
         return stockRepository.save(stock);
     }
 

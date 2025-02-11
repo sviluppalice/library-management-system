@@ -16,7 +16,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/books")
+@RequestMapping("api/stocks")
 public class StockController {
 
     private final StockService stockService;

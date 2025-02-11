@@ -1,6 +1,7 @@
 package org.dirimo.biblioteca.shelf;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +12,9 @@ import java.util.Optional;
 public class ShelfService {
 
     private final ShelfRepository shelfRepository;
+
+    @Value("${library.maxReservationPerUser}")
+    private int maxReservation;
 
     // Get all shelves
     public List<Shelf> getAllShelves() {
@@ -31,6 +35,7 @@ public class ShelfService {
     public Shelf updateShelf(Long id, Shelf shelf) {
         shelfRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Scaffale con id: " + id + " non trovato."));
+        shelf.setId(id);
         return shelfRepository.save(shelf);
     }
 
