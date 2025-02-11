@@ -2,7 +2,6 @@ package org.dirimo.biblioteca.book;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -31,37 +29,26 @@ public class BookController {
 
     // Get book by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
-        Optional<Book> book = bookService.getBookById(id);
-        if (book.isPresent()) {
-            return ResponseEntity.ok(book.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public Book getBookById(@PathVariable Long id) {
+        return bookService.getBookById(id)
+                .orElseThrow(() -> new RuntimeException("Libro con id " + id + " non trovato."));
     }
 
     // Add a new book
     @PostMapping("/")
-    public ResponseEntity<Book> createBook(@RequestBody Book book) {
-        Book savedBook = bookService.saveBook(book);
-        return ResponseEntity.ok(savedBook);
+    public Book createBook(@RequestBody Book book) {
+        return bookService.saveBook(book);
     }
 
     // Update a book
     @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book bookDetails) {
-        try {
-            Book updatedBook = bookService.updateBook(id, bookDetails);
-            return ResponseEntity.ok(updatedBook);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public Book updateBook(@PathVariable Long id, @RequestBody Book book) {
+        return bookService.updateBook(id, book);
     }
 
     // Delete a book
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
+    public void deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
-        return ResponseEntity.noContent().build();
     }
 }

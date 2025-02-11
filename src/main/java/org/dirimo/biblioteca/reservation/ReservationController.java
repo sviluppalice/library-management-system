@@ -2,7 +2,6 @@ package org.dirimo.biblioteca.reservation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -31,37 +29,26 @@ public class ReservationController {
 
     // Get reservation by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Reservation> getBookById(@PathVariable Long id) {
-        Optional<Reservation> reservation = reservationService.getReservationById(id);
-        if (reservation.isPresent()) {
-            return ResponseEntity.ok(reservation.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public Reservation getBookById(@PathVariable Long id) {
+        return reservationService.getReservationById(id)
+                .orElseThrow(() -> new RuntimeException("Prenotazione con id " + id + " non trovata."));
     }
 
     // Add a new reservation
     @PostMapping("/")
-    public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservation) {
-        Reservation savedReservation = reservationService.saveReservation(reservation);
-        return ResponseEntity.ok(savedReservation);
+    public Reservation createReservation(@RequestBody Reservation reservation) {
+        return reservationService.saveReservation(reservation);
     }
 
     // Update a reservation
     @PutMapping("/{id}")
-    public ResponseEntity<Reservation> updateReservation(@PathVariable Long id, @RequestBody Reservation reservationDetails) {
-        try {
-            Reservation updatedReservation = reservationService.updateReservation(id, reservationDetails);
-            return ResponseEntity.ok(updatedReservation);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public Reservation updateReservation(@PathVariable Long id, @RequestBody Reservation reservation) {
+        return reservationService.updateReservation(id, reservation);
     }
 
     // Delete a reservation
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+    public void deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
-        return ResponseEntity.noContent().build();
     }
 }

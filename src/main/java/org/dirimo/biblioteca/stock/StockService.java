@@ -28,7 +28,7 @@ public class StockService {
 
     //Update a stock
     public Stock updateStock(Long id, Stock stock) {
-        return stockRepository.findById(id)
+        stockRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Stock con ID: " + id));
         return stockRepository.save(stock);
     }

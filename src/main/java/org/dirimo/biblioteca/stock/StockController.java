@@ -2,7 +2,6 @@ package org.dirimo.biblioteca.stock;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -31,37 +29,26 @@ public class StockController {
 
     // Get stock by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Stock> getStockById(@PathVariable Long id) {
-        Optional<Stock> stock = stockService.getStockById(id);
-        if (stock.isPresent()) {
-            return ResponseEntity.ok(stock.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public Stock getStockById(@PathVariable Long id) {
+        return stockService.getStockById(id)
+                .orElseThrow(() -> new RuntimeException("Stock con id " + id + " non trovato."));
     }
 
     // Create stock
     @PostMapping("/")
-    public ResponseEntity<Stock> createStock(@RequestBody Stock stock) {
-        Stock savedStock = stockService.saveStock(stock);
-        return ResponseEntity.ok(savedStock);
+    public Stock createStock(@RequestBody Stock stock) {
+        return stockService.saveStock(stock);
     }
 
     // Update a stock
     @PutMapping("/{id}")
-    public ResponseEntity<Stock> updateStock(@PathVariable Long id, @RequestBody Stock stockDetails) {
-        try {
-            Stock updatedStock = stockService.updateStock(id, stockDetails);
-            return ResponseEntity.ok(updatedStock);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public Stock updateStock(@PathVariable Long id, @RequestBody Stock stock) {
+        return stockService.updateStock(id, stock);
     }
 
     // Delete a shelf
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStock(@PathVariable Long id) {
+    public void deleteStock(@PathVariable Long id) {
         stockService.deleteStock(id);
-        return ResponseEntity.noContent().build();
     }
 }
