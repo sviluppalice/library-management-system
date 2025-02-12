@@ -29,7 +29,7 @@ public class ReservationController {
 
     // Get reservation by ID
     @GetMapping("/{id}")
-    public Reservation getBookById(@PathVariable Long id) {
+    public Reservation getReservationById(@PathVariable Long id) {
         return reservationService.getReservationById(id)
                 .orElseThrow(() -> new RuntimeException("Prenotazione con id " + id + " non trovata."));
     }
