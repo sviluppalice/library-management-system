@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor()
 public class StockService {
 
     private final StockRepository stockRepository;
@@ -47,5 +47,10 @@ public class StockService {
     // Delete a stock
     public void deleteStock(Long id) {
         stockRepository.deleteById(id);
+    }
+
+    // Find stock by book id
+    public Optional<Stock> findByBookId(Long bookId) {
+        return stockRepository.findByBookId(bookId);
     }
 }
