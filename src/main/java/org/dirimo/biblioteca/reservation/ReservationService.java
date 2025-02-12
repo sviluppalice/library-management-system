@@ -2,7 +2,6 @@ package org.dirimo.biblioteca.reservation;
 
 import lombok.RequiredArgsConstructor;
 import org.dirimo.biblioteca.stock.Stock;
-import org.dirimo.biblioteca.stock.StockRepository;
 import org.dirimo.biblioteca.stock.StockService;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +14,6 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final StockService stockService;
-    private final StockRepository stockRepository;
 
     // Get all reservations
     public List<Reservation> getAllReservations() {
@@ -28,9 +26,9 @@ public class ReservationService {
     }
 
     // Add a new reservation
-    public Reservation saveReservation(Reservation reservation) throws RuntimeException {
+    public Reservation saveReservation(Reservation reservation) {
         Long bookId = reservation.getBook().getId(); // prendo id del libro da prenotazione
-        Optional<Stock> stockOptional = stockService.findByBookId(bookId); // metto in optional perché potrebbe non esistere
+        Optional<Stock> stockOptional = stockService.findByBookId(bookId); // in optional perché potrebbe non esistere
 
         Stock stock = stockOptional.orElseThrow(() ->
                 new RuntimeException("Libro con id: " + bookId + " non trovato.")
