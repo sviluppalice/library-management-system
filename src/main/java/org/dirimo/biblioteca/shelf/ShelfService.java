@@ -1,7 +1,8 @@
 package org.dirimo.biblioteca.shelf;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.dirimo.biblioteca.zone.Zone;
+import org.dirimo.biblioteca.zone.ZoneRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.Optional;
 public class ShelfService {
 
     private final ShelfRepository shelfRepository;
+    private final ZoneRepository zoneRepository;
 
     @Value("${library.maxReservationPerUser}")
     private int maxReservation;
@@ -29,26 +31,27 @@ public class ShelfService {
 
     // Get shelves by zone ID
     public List<Shelf> getShelvesByZoneId(Long zoneId) {
-        return shelfRepository.findShelvesByZoneId(zoneId);
+        return shelfRepository.findShelvesByZoneZoneId(zoneId);
     }
 
     // Add a new shelf
-    @Transactional
     public Shelf saveShelf(Shelf shelf) {
+        Long zoneId = shelf.getZone().getZoneId();
+        Zone zone = zoneRepository.findById(zoneId)
+                .orElseThrow(() -> new RuntimeException("Zona con id: " +zoneId+ " non trovata."));
+        shelf.setZone(zone);
         return shelfRepository.save(shelf);
     }
 
     // Update a shelf
-    @Transactional
     public Shelf updateShelf(Long id, Shelf shelf) {
         shelfRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Scaffale con id: " + id + " non trovato."));
-        shelf.setId(id);
+        shelf.setShelfId(id);
         return shelfRepository.save(shelf);
     }
 
     // Delete a shelf by ID
-    @Transactional
     public void deleteShelf(Long id) {
         shelfRepository.deleteById(id);
     }

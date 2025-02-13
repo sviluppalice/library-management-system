@@ -1,5 +1,6 @@
 package org.dirimo.biblioteca.stock;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,14 +10,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
+@Transactional
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/stocks")
+@RequestMapping("Stock")
 public class StockController {
 
     private final StockService stockService;
@@ -32,6 +36,12 @@ public class StockController {
     public Stock getStockById(@PathVariable Long id) {
         return stockService.getStockById(id)
                 .orElseThrow(() -> new RuntimeException("Stock con id " + id + " non trovato."));
+    }
+
+    // Get stock by bookID
+    @GetMapping("/book")
+    public Optional<Stock> getStockByBookId(@RequestParam Long bookId) {
+        return stockService.getStockByBookId(bookId);
     }
 
     // Create stock

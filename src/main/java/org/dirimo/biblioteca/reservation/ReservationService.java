@@ -1,6 +1,5 @@
 package org.dirimo.biblioteca.reservation;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.dirimo.biblioteca.stock.Stock;
 import org.dirimo.biblioteca.stock.StockService;
@@ -27,10 +26,9 @@ public class ReservationService {
     }
 
     // Add a new reservation
-    @Transactional
     public Reservation saveReservation(Reservation reservation) {
-        Long bookId = reservation.getBook().getId();
-        Optional<Stock> stockOptional = stockService.findByBookId(bookId);
+        Long bookId = reservation.getBook().getBookId();
+        Optional<Stock> stockOptional = stockService.getStockByBookId(bookId);
 
         Stock stock = stockOptional.orElseThrow(() ->
                 new RuntimeException("Libro con id: " + bookId + " non trovato.")
@@ -45,17 +43,19 @@ public class ReservationService {
     }
 
     // Update a reservation
-    @Transactional
     public Reservation updateReservation(Long id, Reservation reservation) {
         reservationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Prenotazione con id: " + id + " non trovata"));
-        reservation.setId(id);
+        reservation.setResId(id);
         return reservationRepository.save(reservation);
     }
 
     // Delete a reservation by ID
-    @Transactional
     public void deleteReservation(Long id) {
         reservationRepository.deleteById(id);
     }
+
+    //azione che faccia chiusura reservation
+    // - cambia stato
+    // - calcola giorni intercorsi tra start e end
 }

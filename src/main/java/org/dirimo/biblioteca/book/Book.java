@@ -25,7 +25,7 @@ public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long bookId;
 
     @ManyToOne
     @JoinColumn(name = "shelf_id")

@@ -13,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.dirimo.biblioteca.book.Book;
+import org.dirimo.biblioteca.reservation.enumerated.ReservationStatus;
+
 import java.time.LocalDate;
 
 @Entity
@@ -25,7 +27,7 @@ public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long resId;
 
     @Column(name="customer", nullable=false)
     private String customer;
@@ -36,5 +38,7 @@ public class Reservation {
     @ManyToOne
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
+
+    private ReservationStatus status;
 
 }

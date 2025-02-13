@@ -26,10 +26,10 @@ public class Zone {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long zoneId;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "zone_name")
+    private String zoneName;
 
     @OneToMany(mappedBy = "zone")
     @JsonIgnore

@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface ShelfRepository extends JpaRepository<Shelf, Long>{
-    List<Shelf> findShelvesByZoneId(Long zoneId);
+    List<Shelf> findShelvesByZoneZoneId(Long zoneId);
 }

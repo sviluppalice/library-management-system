@@ -1,6 +1,5 @@
 package org.dirimo.biblioteca.book;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,26 +26,23 @@ public class BookService {
 
     // Get books by shelf ID
     public List<Book> getBooksByShelfId(Long shelfId) {
-        return bookRepository.findBooksByShelfId(shelfId);
+        return bookRepository.findBooksByShelfShelfId(shelfId);
     }
 
     // Add a new book
-    @Transactional
     public Book saveBook(Book book) {
         return bookRepository.save(book);
     }
 
     // Update a book
-    @Transactional
     public Book updateBook(Long id, Book book) {
         bookRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Libro con ID: " + id + " non trovato."));
-        book.setId(id);
+        book.setBookId(id);
         return bookRepository.save(book);
     }
 
     // Delete a book by ID
-    @Transactional
     public void deleteBook(Long id) {
         bookRepository.deleteById(id);
     }

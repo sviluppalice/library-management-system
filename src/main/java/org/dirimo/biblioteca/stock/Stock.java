@@ -24,7 +24,7 @@ public class Stock {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long stockId;
 
     @ManyToOne
     @JoinColumn(name = "book_id", unique = true, nullable = false)

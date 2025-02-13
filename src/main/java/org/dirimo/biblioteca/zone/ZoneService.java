@@ -1,6 +1,5 @@
 package org.dirimo.biblioteca.zone;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,22 +25,19 @@ public class ZoneService {
     }
 
     // Add a new zone
-    @Transactional
     public Zone saveZone(Zone zone) {
         return zoneRepository.save(zone);
     }
 
     // Update a zone
-    @Transactional
     public Zone updateZone(Long id, Zone zone) {
         zoneRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Zona con id: " + id + " non trovata."));
-        zone.setId(id);
+        zone.setZoneId(id);
         return zoneRepository.save(zone);
     }
 
     //Delete a zone
-    @Transactional
     public void deleteZone(Long id) {
         zoneRepository.deleteById(id);
     }
