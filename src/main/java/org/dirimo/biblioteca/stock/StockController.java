@@ -47,7 +47,7 @@ public class StockController {
     // Create stock
     @PostMapping("/")
     public Stock create(@RequestBody Stock stock) {
-        return stockService.save(stock);
+        return stockService.create(stock);
     }
 
     // Update a stock
