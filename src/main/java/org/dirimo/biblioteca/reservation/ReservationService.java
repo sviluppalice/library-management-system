@@ -1,5 +1,6 @@
 package org.dirimo.biblioteca.reservation;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.dirimo.biblioteca.stock.Stock;
 import org.dirimo.biblioteca.stock.StockService;
@@ -26,23 +27,25 @@ public class ReservationService {
     }
 
     // Add a new reservation
+    @Transactional
     public Reservation saveReservation(Reservation reservation) {
-        Long bookId = reservation.getBook().getId(); // prendo id del libro da prenotazione
-        Optional<Stock> stockOptional = stockService.findByBookId(bookId); // in optional perché potrebbe non esistere
+        Long bookId = reservation.getBook().getId();
+        Optional<Stock> stockOptional = stockService.findByBookId(bookId);
 
         Stock stock = stockOptional.orElseThrow(() ->
                 new RuntimeException("Libro con id: " + bookId + " non trovato.")
-        ); // controllo esistenza mettendo in oggetto stock
+        );
 
         if (stock.getAvailable_copies() <= 0) {
             throw new RuntimeException("Non ci sono copie del libro " + bookId + " disponibili al momento.");
-        } else { //controllo che copie disponibili > 0
-            stock.setAvailable_copies(stock.getAvailable_copies() - 1); // tolgo 1 alle copie disponibili del libro
-            return reservationRepository.save(reservation); // salvo prenotazione e restituisco
+        } else {
+            stock.setAvailable_copies(stock.getAvailable_copies() - 1);
+            return reservationRepository.save(reservation);
         }
     }
 
     // Update a reservation
+    @Transactional
     public Reservation updateReservation(Long id, Reservation reservation) {
         reservationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Prenotazione con id: " + id + " non trovata"));
@@ -51,6 +54,7 @@ public class ReservationService {
     }
 
     // Delete a reservation by ID
+    @Transactional
     public void deleteReservation(Long id) {
         reservationRepository.deleteById(id);
     }

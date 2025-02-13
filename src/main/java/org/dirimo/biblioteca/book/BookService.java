@@ -24,6 +24,11 @@ public class BookService {
         return bookRepository.findById(id);
     }
 
+    // Get books by shelf ID
+    public List<Book> getBooksByShelfId(Long shelfId) {
+        return bookRepository.findBooksByShelfId(shelfId);
+    }
+
     // Add a new book
     public Book saveBook(Book book) {
         return bookRepository.save(book);
