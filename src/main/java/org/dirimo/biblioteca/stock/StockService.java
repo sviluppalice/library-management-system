@@ -1,5 +1,6 @@
 package org.dirimo.biblioteca.stock;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.dirimo.biblioteca.book.Book;
 import org.dirimo.biblioteca.book.BookRepository;
@@ -25,7 +26,13 @@ public class StockService {
         return stockRepository.findById(id);
     }
 
+    // Get stock by book ID
+    public Optional<Stock> findByBookId(Long bookId) {
+        return stockRepository.findByBookId(bookId);
+    }
+
     // Add a new stock
+    @Transactional
     public Stock saveStock(Stock stock) {
         Long bookId = stock.getBook().getId();
         Book wholeBook = bookRepository.findById(bookId)
@@ -37,6 +44,7 @@ public class StockService {
     }
 
     //Update a stock
+    @Transactional
     public Stock updateStock(Long id, Stock stock) {
         stockRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Stock con ID: " + id));
@@ -45,12 +53,8 @@ public class StockService {
     }
 
     // Delete a stock
+    @Transactional
     public void deleteStock(Long id) {
         stockRepository.deleteById(id);
-    }
-
-    // Find stock by book id
-    public Optional<Stock> findByBookId(Long bookId) {
-        return stockRepository.findByBookId(bookId);
     }
 }

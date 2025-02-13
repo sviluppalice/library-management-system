@@ -1,5 +1,6 @@
 package org.dirimo.biblioteca.shelf;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,11 +33,13 @@ public class ShelfService {
     }
 
     // Add a new shelf
+    @Transactional
     public Shelf saveShelf(Shelf shelf) {
         return shelfRepository.save(shelf);
     }
 
     // Update a shelf
+    @Transactional
     public Shelf updateShelf(Long id, Shelf shelf) {
         shelfRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Scaffale con id: " + id + " non trovato."));
@@ -45,6 +48,7 @@ public class ShelfService {
     }
 
     // Delete a shelf by ID
+    @Transactional
     public void deleteShelf(Long id) {
         shelfRepository.deleteById(id);
     }
