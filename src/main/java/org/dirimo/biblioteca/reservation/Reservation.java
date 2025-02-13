@@ -29,16 +29,19 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long resId;
 
-    @Column(name="customer", nullable=false)
+    @Column(name="cliente", nullable=false)
     private String customer;
 
-    @Column(name="data_prenotazione", nullable=false)
-    private LocalDate reservationDate;
+    @Column(name="data_start", nullable=false)
+    private LocalDate resStartDate;
+
+    @Column(name="data_end")
+    private LocalDate resEndDate;
 
     @ManyToOne
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
+    @Column(name = "status")
     private ReservationStatus status;
-
 }

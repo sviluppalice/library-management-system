@@ -27,38 +27,38 @@ public class StockController {
 
     // Get all stocks
     @GetMapping("/")
-    public List<Stock> getAllStocks() {
-        return stockService.getAllStocks();
+    public List<Stock> getAll() {
+        return stockService.getAll();
     }
 
     // Get stock by ID
     @GetMapping("/{id}")
-    public Stock getStockById(@PathVariable Long id) {
-        return stockService.getStockById(id)
+    public Stock getById(@PathVariable Long id) {
+        return stockService.getById(id)
                 .orElseThrow(() -> new RuntimeException("Stock con id " + id + " non trovato."));
     }
 
     // Get stock by bookID
     @GetMapping("/book")
-    public Optional<Stock> getStockByBookId(@RequestParam Long bookId) {
-        return stockService.getStockByBookId(bookId);
+    public Optional<Stock> getByBookId(@RequestParam Long bookId) {
+        return stockService.getByBookId(bookId);
     }
 
     // Create stock
     @PostMapping("/")
-    public Stock createStock(@RequestBody Stock stock) {
-        return stockService.saveStock(stock);
+    public Stock create(@RequestBody Stock stock) {
+        return stockService.save(stock);
     }
 
     // Update a stock
     @PutMapping("/{id}")
-    public Stock updateStock(@PathVariable Long id, @RequestBody Stock stock) {
-        return stockService.updateStock(id, stock);
+    public Stock update(@PathVariable Long id, @RequestBody Stock stock) {
+        return stockService.update(id, stock);
     }
 
     // Delete a shelf
     @DeleteMapping("/{id}")
-    public void deleteStock(@PathVariable Long id) {
-        stockService.deleteStock(id);
+    public void delete(@PathVariable Long id) {
+        stockService.delete(id);
     }
 }

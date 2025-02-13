@@ -19,15 +19,15 @@ import java.util.List;
 @Transactional
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/shelves")
+@RequestMapping("Shelf")
 public class ShelfController {
 
     private final ShelfService shelfService;
 
     // Get all shelves
     @GetMapping("/")
-    public List<Shelf> getAllShelves() {
-        return shelfService.getAllShelves();
+    public List<Shelf> getAll() {
+        return shelfService.getAll();
     }
 
     // Get shelf by ID
@@ -39,25 +39,25 @@ public class ShelfController {
 
     // Get shelves by zone ID
     @GetMapping("/zone")
-    public List<Shelf> getShelvesByZoneId(@RequestParam Long zoneId) {
-        return shelfService.getShelvesByZoneId(zoneId);
+    public List<Shelf> getByZoneId(@RequestParam Long zoneId) {
+        return shelfService.getByZoneId(zoneId);
     }
 
     // Add a new shelf
     @PostMapping("/")
-    public Shelf createShelf(@RequestBody Shelf shelf) {
-        return shelfService.saveShelf(shelf);
+    public Shelf create(@RequestBody Shelf shelf) {
+        return shelfService.create(shelf);
     }
 
     // Update a shelf
     @PutMapping("/{id}")
-    public Shelf updateShelf(@PathVariable Long id, @RequestBody Shelf shelf) {
-        return shelfService.updateShelf(id, shelf);
+    public Shelf update(@PathVariable Long id, @RequestBody Shelf shelf) {
+        return shelfService.update(id, shelf);
     }
 
     // Delete a shelf
     @DeleteMapping("/{id}")
-    public void deleteShelf(@PathVariable Long id) {
-        shelfService.deleteShelf(id);
+    public void delete(@PathVariable Long id) {
+        shelfService.delete(id);
     }
 }

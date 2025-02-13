@@ -15,22 +15,22 @@ public class ZoneService {
     private final ZoneRepository zoneRepository;
 
     // Get all zones
-    public List<Zone> getAllZones() {
+    public List<Zone> getAll() {
         return zoneRepository.findAll();
     }
 
     // Get a zone by ID
-    public Optional<Zone> getZoneById(Long id) {
+    public Optional<Zone> getById(Long id) {
         return zoneRepository.findById(id);
     }
 
     // Add a new zone
-    public Zone saveZone(Zone zone) {
+    public Zone create(Zone zone) {
         return zoneRepository.save(zone);
     }
 
     // Update a zone
-    public Zone updateZone(Long id, Zone zone) {
+    public Zone update(Long id, Zone zone) {
         zoneRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Zona con id: " + id + " non trovata."));
         zone.setZoneId(id);
@@ -38,7 +38,7 @@ public class ZoneService {
     }
 
     //Delete a zone
-    public void deleteZone(Long id) {
+    public void delete(Long id) {
         zoneRepository.deleteById(id);
     }
 

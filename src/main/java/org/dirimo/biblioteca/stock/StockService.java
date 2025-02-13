@@ -16,22 +16,22 @@ public class StockService {
     private final BookRepository bookRepository;
 
     // Get all stocks
-    public List<Stock> getAllStocks() {
+    public List<Stock> getAll() {
         return stockRepository.findAll();
     }
 
     // Get a stock by ID
-    public Optional<Stock> getStockById(Long id) {
+    public Optional<Stock> getById(Long id) {
         return stockRepository.findById(id);
     }
 
     // Get stock by book ID
-    public Optional<Stock> getStockByBookId(Long bookId) {
-        return stockRepository.findStockByBookBookId(bookId);
+    public Optional<Stock> getByBookId(Long bookId) {
+        return stockRepository.findByBookBookId(bookId);
     }
 
     // Add a new stock
-    public Stock saveStock(Stock stock) {
+    public Stock create(Stock stock) {
         Long bookId = stock.getBook().getBookId();
         Book wholeBook = bookRepository.findById(bookId)
                 .orElseThrow(() -> new RuntimeException("Libro con Id " + bookId + " non trovato"));
@@ -40,7 +40,7 @@ public class StockService {
     }
 
     //Update a stock
-    public Stock updateStock(Long id, Stock stock) {
+    public Stock update(Long id, Stock stock) {
         stockRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Stock con ID: " + id));
         stock.setStockId(id);
@@ -48,7 +48,7 @@ public class StockService {
     }
 
     // Delete a stock
-    public void deleteStock(Long id) {
+    public void delete(Long id) {
         stockRepository.deleteById(id);
     }
 }

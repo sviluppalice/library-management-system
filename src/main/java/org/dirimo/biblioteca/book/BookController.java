@@ -19,7 +19,7 @@ import java.util.List;
 @Transactional
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/books")
+@RequestMapping("Book")
 public class BookController {
 
     private final BookService bookService;

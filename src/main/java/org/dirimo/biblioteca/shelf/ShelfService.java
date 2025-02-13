@@ -20,7 +20,7 @@ public class ShelfService {
     private int maxReservation;
 
     // Get all shelves
-    public List<Shelf> getAllShelves() {
+    public List<Shelf> getAll() {
         return shelfRepository.findAll();
     }
 
@@ -30,12 +30,12 @@ public class ShelfService {
     }
 
     // Get shelves by zone ID
-    public List<Shelf> getShelvesByZoneId(Long zoneId) {
-        return shelfRepository.findShelvesByZoneZoneId(zoneId);
+    public List<Shelf> getByZoneId(Long zoneId) {
+        return shelfRepository.findByZoneZoneId(zoneId);
     }
 
     // Add a new shelf
-    public Shelf saveShelf(Shelf shelf) {
+    public Shelf create(Shelf shelf) {
         Long zoneId = shelf.getZone().getZoneId();
         Zone zone = zoneRepository.findById(zoneId)
                 .orElseThrow(() -> new RuntimeException("Zona con id: " +zoneId+ " non trovata."));
@@ -44,7 +44,7 @@ public class ShelfService {
     }
 
     // Update a shelf
-    public Shelf updateShelf(Long id, Shelf shelf) {
+    public Shelf update(Long id, Shelf shelf) {
         shelfRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Scaffale con id: " + id + " non trovato."));
         shelf.setShelfId(id);
@@ -52,7 +52,7 @@ public class ShelfService {
     }
 
     // Delete a shelf by ID
-    public void deleteShelf(Long id) {
+    public void delete(Long id) {
         shelfRepository.deleteById(id);
     }
 }

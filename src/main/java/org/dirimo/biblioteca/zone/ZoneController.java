@@ -16,39 +16,39 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/zones")
+@RequestMapping("Zone")
 public class ZoneController {
 
     private final ZoneService zoneService;
 
     // Get all zones
     @GetMapping("/")
-    public List<Zone> getAllZones() {
-        return zoneService.getAllZones();
+    public List<Zone> getAll() {
+        return zoneService.getAll();
     }
 
     // Get zone by id
     @GetMapping("/{id}")
-    public Zone getZoneById(@PathVariable Long id) {
-        return zoneService.getZoneById(id)
+    public Zone getById(@PathVariable Long id) {
+        return zoneService.getById(id)
                 .orElseThrow(() -> new RuntimeException("Zona con id " + id + " non trovata."));
     }
 
     // Create a zone
     @PostMapping("/")
     public Zone createZone(@RequestBody Zone zone) {
-        return zoneService.saveZone(zone);
+        return zoneService.create(zone);
     }
 
     // Update a zone
     @PutMapping("/{id}")
-    public Zone updateZone(@PathVariable Long id, @RequestBody Zone zone) {
-            return zoneService.updateZone(id, zone);
+    public Zone update(@PathVariable Long id, @RequestBody Zone zone) {
+            return zoneService.update(id, zone);
     }
 
     // Delete a zone
     @DeleteMapping("/{id}")
-    public void deleteZone(@PathVariable Long id) {
-        zoneService.deleteZone(id);
+    public void delete(@PathVariable Long id) {
+        zoneService.delete(id);
     }
 }
