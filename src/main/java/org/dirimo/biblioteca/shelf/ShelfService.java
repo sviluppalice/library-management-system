@@ -26,6 +26,11 @@ public class ShelfService {
         return shelfRepository.findById(id);
     }
 
+    // Get shelves by zone ID
+    public List<Shelf> getShelvesByZoneId(Long zoneId) {
+        return shelfRepository.findShelvesByZoneId(zoneId);
+    }
+
     // Add a new shelf
     public Shelf saveShelf(Shelf shelf) {
         return shelfRepository.save(shelf);

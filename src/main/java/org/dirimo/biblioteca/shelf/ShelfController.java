@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -32,6 +33,12 @@ public class ShelfController {
     public Shelf getBookById(@PathVariable Long id) {
         return shelfService.getShelfById(id)
                 .orElseThrow(() -> new RuntimeException("Scaffale con id " + id + " non trovato."));
+    }
+
+    // Get shelves by zone ID
+    @GetMapping("/zone")
+    public List<Shelf> getShelvesByZoneId(@RequestParam Long zoneId) {
+        return shelfService.getShelvesByZoneId(zoneId);
     }
 
     // Add a new shelf
