@@ -1,4 +1,4 @@
-package org.dirimo.biblioteca.reservation.close;
+package org.dirimo.biblioteca.reservation.action;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CloseResAction {
+public class CloseReservationAction {
 
     private LocalDate date;
 }

@@ -31,10 +31,14 @@ public class Stock {
     private Book book;
 
     @Column(name="totale_copie", columnDefinition = "int default 1", nullable = false)
-    private int total_copies;
+    private int totalCopies;
 
     @Column(name="copie_disponibili", nullable = false)
-    private int available_copies;
+    private int availableCopies;
+
+    public void handleQuantity(int quantity) {
+        availableCopies += quantity;
+    }
 
 
 }

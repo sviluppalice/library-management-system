@@ -2,6 +2,7 @@ package org.dirimo.biblioteca.reservation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dirimo.biblioteca.book.Book;
 import org.dirimo.biblioteca.reservation.enumerated.ReservationStatus;
 import org.dirimo.biblioteca.stock.Stock;
 import org.dirimo.biblioteca.stock.StockService;
@@ -40,11 +41,11 @@ public class ReservationService {
         );
 
         // Check copies availability
-        if (stock.getAvailable_copies() <= 0) {
+        if (stock.getAvailableCopies() <= 0) {
             throw new RuntimeException("Non ci sono copie del libro " + bookId + " disponibili al momento.");
         } else {
             reservation.setStatus(ReservationStatus.ACTIVE);
-            stock.setAvailable_copies(stock.getAvailable_copies() - 1);
+            stock.handleQuantity(-1);
             return reservationRepository.save(reservation);
         }
     }
@@ -70,15 +71,15 @@ public class ReservationService {
         reservation.setResEndDate(date);
 
         // Updates stock
-        Long bookId = reservation.getBook().getBookId();
-        Optional<Stock> stockOptional = stockService.getByBookId(bookId);
+        Book book = reservation.getBook();
+        Optional<Stock> stockOptional = stockService.getByBook(book);
         Stock stock = stockOptional.orElseThrow(() ->
-                new RuntimeException("Libro con id: " + bookId + " non trovato.")
+                new RuntimeException("Libro con id: " + book.getBookId() + " non trovato.")
         );
-        stock.setAvailable_copies(stock.getAvailable_copies() + 1);
+        stock.handleQuantity(1);
 
         int diff = (int) ChronoUnit.DAYS.between(reservation.getResStartDate(), reservation.getResEndDate());
         log.info("Hai riportato indietro il libro in " + diff + " giorni.");
-        return reservationRepository.save(reservation);
+        return reservation;
     }
 }

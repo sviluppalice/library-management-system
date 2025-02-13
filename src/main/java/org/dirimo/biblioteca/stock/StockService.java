@@ -30,6 +30,11 @@ public class StockService {
         return stockRepository.findByBookBookId(bookId);
     }
 
+    //
+    public Optional<Stock> getByBook(Book book) {
+        return stockRepository.findByBook(book);
+    }
+
     // Add a new stock
     public Stock create(Stock stock) {
         Long bookId = stock.getBook().getBookId();
