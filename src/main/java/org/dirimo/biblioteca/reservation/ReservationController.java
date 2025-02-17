@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dirimo.biblioteca.reservation.action.CloseReservationAction;
+import org.dirimo.biblioteca.reservation.request.OpenReservationRequest;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,9 +39,16 @@ public class ReservationController {
     }
 
     // Add a new reservation
+    /*  @PostMapping("/")
+     *  public Reservation create(@RequestBody Reservation reservation) {
+     *      return reservationService.create(reservation);
+     *  }
+     */
+
+    // Add a new reservation
     @PostMapping("/")
-    public Reservation create(@RequestBody Reservation reservation) {
-        return reservationService.create(reservation);
+    public Reservation open(@RequestBody OpenReservationRequest request) {
+        return reservationService.open(request.getReservation(), request.getAction().getDate());
     }
 
     // Update a reservation

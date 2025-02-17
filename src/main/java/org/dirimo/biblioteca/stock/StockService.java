@@ -30,7 +30,7 @@ public class StockService {
         return stockRepository.findByBookBookId(bookId);
     }
 
-    //
+    // Get stock by book
     public Optional<Stock> getByBook(Book book) {
         return stockRepository.findByBook(book);
     }

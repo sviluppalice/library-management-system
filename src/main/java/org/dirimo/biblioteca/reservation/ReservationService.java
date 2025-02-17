@@ -32,23 +32,10 @@ public class ReservationService {
     }
 
     // Add a new reservation
-    public Reservation create(Reservation reservation) {
-        // Updates stock
-        Long bookId = reservation.getBook().getBookId();
-        Optional<Stock> stockOptional = stockService.getByBookId(bookId);
-        Stock stock = stockOptional.orElseThrow(() ->
-                new RuntimeException("Libro con id: " + bookId + " non trovato.")
-        );
-
-        // Check copies availability
-        if (stock.getAvailableCopies() <= 0) {
-            throw new RuntimeException("Non ci sono copie del libro " + bookId + " disponibili al momento.");
-        } else {
-            reservation.setStatus(ReservationStatus.ACTIVE);
-            stock.handleQuantity(-1);
-            return reservationRepository.save(reservation);
-        }
-    }
+    /*    public Reservation create(Reservation reservation) {
+     *      return reservationRepository.save(reservation);
+     *    }
+     */
 
     // Update a reservation
     public Reservation update(Long id, Reservation reservation) {
@@ -81,5 +68,24 @@ public class ReservationService {
         int diff = (int) ChronoUnit.DAYS.between(reservation.getResStartDate(), reservation.getResEndDate());
         log.info("Hai riportato indietro il libro in " + diff + " giorni.");
         return reservation;
+    }
+
+    public Reservation open(Reservation reservation, LocalDate date) {
+        // Check stock existence
+        Book book = reservation.getBook();
+        Optional<Stock> stockOptional = stockService.getByBook(book);
+        Stock stock = stockOptional.orElseThrow(() ->
+                new RuntimeException("Libro con id: " + book.getBookId() + " non trovato.")
+        );
+
+        // Check copies availability and if available, creates reservation
+        if (stock.getAvailableCopies() <= 0) {
+            throw new RuntimeException("Non ci sono copie del libro " + book.getBookId() + " disponibili al momento.");
+        } else {
+            reservation.setStatus(ReservationStatus.ACTIVE);
+            reservation.setResStartDate(date);
+            stock.handleQuantity(-1);
+            return reservationRepository.save(reservation);
+        }
     }
 }
