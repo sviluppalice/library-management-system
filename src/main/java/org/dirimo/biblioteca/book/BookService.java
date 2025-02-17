@@ -15,7 +15,7 @@ public class BookService {
     //Singleton: una sola istanza di una classe in tutto il sistema
 
     // Get all books
-    public List<Book> getAllBooks() {
+    public List<Book> getAll() {
         return bookRepository.findAll();
     }
 
@@ -30,12 +30,12 @@ public class BookService {
     }
 
     // Add a new book
-    public Book saveBook(Book book) {
+    public Book create(Book book) {
         return bookRepository.save(book);
     }
 
     // Update a book
-    public Book updateBook(Long id, Book book) {
+    public Book update(Long id, Book book) {
         bookRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Libro con ID: " + id + " non trovato."));
         book.setBookId(id);
@@ -43,7 +43,7 @@ public class BookService {
     }
 
     // Delete a book by ID
-    public void deleteBook(Long id) {
+    public void delete(Long id) {
         bookRepository.deleteById(id);
     }
 }

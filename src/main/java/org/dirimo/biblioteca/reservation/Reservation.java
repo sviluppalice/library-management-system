@@ -32,11 +32,17 @@ public class Reservation {
     @Column(name="cliente", nullable=false)
     private String customer;
 
+    @Column(name="email_cliente")
+    private String email;
+
     @Column(name="data_start", nullable=false)
     private LocalDate resStartDate;
 
     @Column(name="data_end")
     private LocalDate resEndDate;
+
+    @Column(name="data_scadenza")
+    private LocalDate resExpiryDate;
 
     @ManyToOne
     @JoinColumn(name = "book_id", nullable = false)

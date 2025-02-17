@@ -84,8 +84,13 @@ public class ReservationService {
         } else {
             reservation.setStatus(ReservationStatus.ACTIVE);
             reservation.setResStartDate(date);
+            reservation.setResExpiryDate(date.plusDays(15));
             stock.handleQuantity(-1);
             return reservationRepository.save(reservation);
         }
+    }
+
+    public List<Reservation> getExpiringReservations(LocalDate startDate, LocalDate endDate) {
+        return reservationRepository.findExpiringReservations(startDate, endDate);
     }
 }
