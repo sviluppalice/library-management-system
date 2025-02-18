@@ -27,7 +27,7 @@ public class Tasks {
     private final MailerService mailerService;
 
     @Async
-    @Scheduled(cron = "0 0/1 * * * *")
+    @Scheduled(cron = "0 0 9 * * *")//"0 * * * * *" ogni minuto - SOLO TESTING
     public void expiringReservationReminder() {
         LocalDate startDate = LocalDate.now();
         LocalDate endDate = startDate.plusDays(3);
@@ -45,7 +45,7 @@ public class Tasks {
     }
 
     @Async
-    @Scheduled(cron = "0 0/1 * * * *")
+    @Scheduled(cron = "0 0 9 * * *")//"0 * * * * *" ogni minuto - SOLO TESTING
     public void expiredReservationNotice(){
         LocalDate today = LocalDate.now();
         ReservationStatus status = ReservationStatus.ACTIVE;
