@@ -25,9 +25,8 @@ public class Tasks {
     private static final Logger logger = LoggerFactory.getLogger(Tasks.class);
     private final MailerService mailerService;
 
-
     @Async
-    @Scheduled(cron = "0 0/1 * * * *") //"0 0 9 * * *"
+    @Scheduled(cron = "0 0 9 * * *")
     public void expiringReservationReminder() {
         LocalDate startDate = LocalDate.now();
         LocalDate endDate = startDate.plusDays(3);
