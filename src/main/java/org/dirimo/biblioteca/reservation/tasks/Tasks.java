@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dirimo.biblioteca.reservation.Reservation;
 import org.dirimo.biblioteca.reservation.ReservationService;
+import org.dirimo.biblioteca.reservation.enumerated.ReservationStatus;
 import org.dirimo.biblioteca.reservation.mail.MailerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,20 +27,36 @@ public class Tasks {
     private final MailerService mailerService;
 
     @Async
-    @Scheduled(cron = "0 0 9 * * *")
+    @Scheduled(cron = "0 0/1 * * * *")
     public void expiringReservationReminder() {
         LocalDate startDate = LocalDate.now();
         LocalDate endDate = startDate.plusDays(3);
+        ReservationStatus status = ReservationStatus.ACTIVE;
 
-        List<Reservation> expiringReservations = reservationService.getExpiringReservations(startDate, endDate);
+        List<Reservation> expiringReservations = reservationService.getExpiring(status, startDate, endDate);
 
         for (Reservation r : expiringReservations) {
             String email = r.getEmail();
-            String subject = "Reservation expiration notice | "+ r.getResExpiryDate();
-            String content = mailerService.buildEmailContent(r);
+            String subject = "Reminder: Your Library Reservation Expires Soon! "+ r.getResExpiryDate();
+            String content = mailerService.buildExpiringReminderContent(r);
             mailerService.sendMail(email, subject, content);
-            logger.info("Email sent to: " + email + " Subject: " + subject);
+            logger.info("Expiring Reservation Reminder sent to: " + email + " Subject: " + subject);
         }
+    }
 
+    @Async
+    @Scheduled(cron = "0 0/1 * * * *")
+    public void expiredReservationNotice(){
+        LocalDate today = LocalDate.now();
+        ReservationStatus status = ReservationStatus.ACTIVE;
+
+        List<Reservation> expiredReservations = reservationService.getExpired(status, today);
+        for (Reservation r : expiredReservations) {
+            String email = r.getEmail();
+            String subject = "Notice: Your Library Reservation Expired on "+ r.getResExpiryDate();
+            String content = mailerService.buildExpirationNoticeContent(r);
+            mailerService.sendMail(email, subject, content);
+            logger.info("Expired Reservation Notice sent to: " + email + " Subject: " + subject);
+        }
     }
 }

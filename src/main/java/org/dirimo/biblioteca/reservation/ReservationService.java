@@ -90,7 +90,11 @@ public class ReservationService {
         }
     }
 
-    public List<Reservation> getExpiringReservations(LocalDate startDate, LocalDate endDate) {
-        return reservationRepository.findExpiringReservations(startDate, endDate);
+    public List<Reservation> getExpiring(ReservationStatus status, LocalDate startDate, LocalDate endDate) {
+        return reservationRepository.findExpiring(status, startDate, endDate);
+    }
+
+    public List<Reservation> getExpired(ReservationStatus status, LocalDate today) {
+        return reservationRepository.findExpired(status, today);
     }
 }
