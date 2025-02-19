@@ -38,5 +38,6 @@ public class Stock {
 
     public void handleQuantity(int quantity) {
         availableCopies += quantity;
+
     }
 }
