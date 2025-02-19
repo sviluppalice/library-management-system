@@ -110,14 +110,13 @@ public class ReservationService {
     // email builders
     public MailProperties buildExpiringReminderMailProperties(Reservation r) {
         MailProperties mailProperties = new MailProperties();
-        Long bookId = r.getBook().getBookId();
-        Optional<Book> bookOptional = bookService.getBookById(bookId);
+        Optional<Book> bookOptional = bookService.getBookById(r.getBook().getBookId());
         Book book = bookOptional.orElseThrow(() ->
-                new RuntimeException("Libro con id: " + bookId + " non trovato.")
+                new RuntimeException("Libro con id: " + r.getBook().getBookId() + " non trovato.")
         );
 
         String body = """
-            <div style='font-family: Arial, sans-serif; padding: 15px; background-color: #f9f9f9; 
+            <div style='font-family: Arial, sans-serif; padding: 15px; background-color: #f9f9f9;
             border: 1px solid #ddd; border-radius: 8px; max-width: 600px;'>
                 <h2 style='color: #2c3e50;'>📅 Your Reservation is Expiring Soon!</h2>
                 <p>Dear <b>%s</b>,</p>
@@ -150,14 +149,13 @@ public class ReservationService {
 
     public MailProperties buildExpiredNoticeMailProperties(Reservation r) {
         MailProperties mailProperties = new MailProperties();
-        Long bookId = r.getBook().getBookId();
-        Optional<Book> bookOptional = bookService.getBookById(bookId);
+        Optional<Book> bookOptional = bookService.getBookById(r.getBook().getBookId());
         Book book = bookOptional.orElseThrow(() ->
-                new RuntimeException("Libro con id: " + bookId + " non trovato.")
+                new RuntimeException("Libro con id: " + r.getBook().getBookId() + " non trovato.")
         );
 
         String body = """
-            <div style='font-family: Arial, sans-serif; padding: 15px; background-color: #f9f9f9; 
+            <div style='font-family: Arial, sans-serif; padding: 15px; background-color: #f9f9f9;
             border: 1px solid #ddd; border-radius: 8px; max-width: 600px;'>
                 <h2 style='color: #c0392b;'>⚠️ Your Reservation Has Expired!</h2>
                 <p>Dear <b>%s</b>,</p>
@@ -190,10 +188,9 @@ public class ReservationService {
 
     public MailProperties buildCreatedReservationMailProperties(Reservation r) {
         MailProperties mailProperties = new MailProperties();
-        Long bookId = r.getBook().getBookId();
-        Optional<Book> bookOptional = bookService.getBookById(bookId);
+        Optional<Book> bookOptional = bookService.getBookById(r.getBook().getBookId());
         Book book = bookOptional.orElseThrow(() ->
-                new RuntimeException("Libro con id: " + bookId + " non trovato.")
+                new RuntimeException("Libro con id: " + r.getBook().getBookId() + " non trovato.")
         );
 
         String body = """
