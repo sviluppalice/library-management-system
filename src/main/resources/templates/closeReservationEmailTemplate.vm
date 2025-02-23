@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+</head>
+<body>
+<div style='font-family: Arial, sans-serif; padding: 15px; background-color: #f9f9f9;
+                border: 1px solid #ddd; border-radius: 8px; max-width: 600px;'>
+    <h2 style='color: #27ae60;'>✅ Your Reservation Has Been Closed Successfully!</h2>
+    <p>Dear <b>${c.firstName} ${c.lastName}</b>,</p>
+    <p>Your reservation <b>(ID: ${r.resId})</b> has been successfully closed on <b style='color: #2c3e50;'>${r.resEndDate}</b>.</p>
+    <hr style='border: 1px solid #ddd;'>
+    <h3 style='color: #2980b9;'>📖 Book Details</h3>
+    <ul>
+        <li><b>Title:</b> ${b.title}</li>
+        <li><b>Author:</b> ${b.author}</li>
+        <li><b>Publisher:</b> ${b.publisher}</li>
+        <li><b>Year:</b> ${b.year}</li>
+    </ul>
+    <p>If you have any questions, feel free to reach out to us. <br>Thank you for using our library services!
+        <br><i>The Library Team</i></p>
+</div>
+</body>
+</html>

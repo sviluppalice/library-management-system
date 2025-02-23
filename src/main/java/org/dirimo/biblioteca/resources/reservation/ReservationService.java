@@ -2,6 +2,8 @@ package org.dirimo.biblioteca.resources.reservation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import org.dirimo.biblioteca.mail.MailProperties;
 import org.dirimo.biblioteca.resources.book.Book;
 import org.dirimo.biblioteca.resources.book.BookService;
@@ -15,6 +17,7 @@ import org.dirimo.biblioteca.resources.stock.StockService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import java.io.StringWriter;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +32,7 @@ public class ReservationService {
     private final BookService bookService;
     private final CustomerService customerService;
     private final ApplicationEventPublisher eventPublisher;
+    private final VelocityEngine velocityEngine;
 
     // Get all reservations
     public List<Reservation> getAll() {
@@ -116,43 +120,30 @@ public class ReservationService {
     public MailProperties buildExpiringReminderMailProperties(Reservation r) {
         MailProperties mailProperties = new MailProperties();
 
+        // Get book
         Optional<Book> bookOptional = bookService.getBookById(r.getBook().getBookId());
-        Book book = bookOptional.orElseThrow(() ->
+        Book b = bookOptional.orElseThrow(() ->
                 new RuntimeException("Libro con id: " + r.getBook().getBookId() + " non trovato.")
         );
 
+        // Get customer
         Optional<Customer> customerOptional = customerService.getById(r.getCustomer().getId());
         Customer c = customerOptional.orElseThrow(() ->
                 new RuntimeException("Customer con id: " + r.getCustomer().getId() + " non trovato.")
         );
 
-        String body = """
-            <div style='font-family: Arial, sans-serif; padding: 15px; background-color: #f9f9f9;
-            border: 1px solid #ddd; border-radius: 8px; max-width: 600px;'>
-                <h2 style='color: #2c3e50;'>📅 Your Reservation is Expiring Soon!</h2>
-                <p>Dear <b>%s %s</b>,</p>
-                <p>Your reservation <b>(ID: %d)</b> will expire on <b style='color: #e74c3c;'>%s</b>.</p>
-                <p>Please return the book to the library, or contact us to make any necessary adjustments.</p>
-                <hr style='border: 1px solid #ddd;'>
-                <h3 style='color: #2980b9;'>📖 Book Details</h3>
-                <ul>
-                    <li><b>Title:</b> %s</li>
-                    <li><b>Author:</b> %s</li>
-                    <li><b>Publisher:</b> %s</li>
-                    <li><b>Year:</b> %s</li>
-                </ul>
-                <p>Thank you,<br><i>The Library Team</i></p>
-            </div>
-            """.formatted(
-                c.getFirstName(), c.getLastName(),
-                r.getResId(), r.getResExpiryDate(),
-                book.getTitle(), book.getAuthor(),
-                book.getPublisher(), book.getYear()
-        );
+        // Velocity context and merge
+        VelocityContext context = new VelocityContext();
+        context.put("r", r);
+        context.put("b", b);
+        context.put("c", c);
+        StringWriter writer = new StringWriter();
+        velocityEngine.getTemplate("templates/expiringReservationEmailTemplate.vm").merge(context, writer);
 
         String subject = "Reminder: Your Library Reservation Expires Soon! " + r.getResExpiryDate();
 
-        mailProperties.setBody(body);
+        // set mailProperties
+        mailProperties.setBody(writer.toString());
         mailProperties.setTo(r.getCustomer().getEmail());
         mailProperties.setSubject(subject);
 
@@ -162,140 +153,99 @@ public class ReservationService {
     public MailProperties buildExpiredNoticeMailProperties(Reservation r) {
         MailProperties mailProperties = new MailProperties();
 
+        // Get book
         Optional<Book> bookOptional = bookService.getBookById(r.getBook().getBookId());
-        Book book = bookOptional.orElseThrow(() ->
+        Book b = bookOptional.orElseThrow(() ->
                 new RuntimeException("Libro con id: " + r.getBook().getBookId() + " non trovato.")
         );
 
+        // Get customer
         Optional<Customer> customerOptional = customerService.getById(r.getCustomer().getId());
         Customer c = customerOptional.orElseThrow(() ->
                 new RuntimeException("Customer con id: " + r.getCustomer().getId() + " non trovato.")
         );
 
-        String body = """
-            <div style='font-family: Arial, sans-serif; padding: 15px; background-color: #f9f9f9;
-            border: 1px solid #ddd; border-radius: 8px; max-width: 600px;'>
-                <h2 style='color: #c0392b;'>⚠️ Your Reservation Has Expired!</h2>
-                <p>Dear <b>%s %s</b>,</p>
-                <p>We regret to inform you that your reservation <b>(ID: %d)</b> has already expired on <b style='color: #e74c3c;'>%s</b>.</p>
-                <p>To avoid any late fees or issues, please return the book to the library in three days, or contact us to make any necessary adjustments.</p>
-                <hr style='border: 1px solid #ddd;'>
-                <h3 style='color: #2980b9;'>📖 Book Details</h3>
-                <ul>
-                    <li><b>Title:</b> %s</li>
-                    <li><b>Author:</b> %s</li>
-                    <li><b>Publisher:</b> %s</li>
-                    <li><b>Year:</b> %d</li>
-                </ul>
-                <p>If you have any questions, feel free to reach out to us. <br>Thank you for your attention,<br><i>The Library Team</i></p>
-            </div>
-        """.formatted(
-                c.getFirstName(), c.getLastName(),
-                r.getResId(), r.getResExpiryDate(),
-                book.getTitle(), book.getAuthor(),
-                book.getPublisher(), book.getYear() // No need for String.valueOf() anymore
-        );
+        // Velocity context and merge
+        VelocityContext context = new VelocityContext();
+        context.put("r", r);
+        context.put("b", b);
+        context.put("c", c);
+        StringWriter writer = new StringWriter();
+        velocityEngine.getTemplate("templates/expiredReservationEmailTemplate.vm").merge(context, writer);
 
         String subject = "Notice: Your Library Reservation Expired on " + r.getResExpiryDate();
 
-        mailProperties.setBody(body);
+        // set mailProperties
+        mailProperties.setBody(writer.toString());
         mailProperties.setTo(c.getEmail());
         mailProperties.setSubject(subject);
 
         return mailProperties;
     }
 
-    public MailProperties buildCreatedReservationMailProperties(Reservation r) {
+    public MailProperties buildOpenReservationMailProperties(Reservation r) {
         MailProperties mailProperties = new MailProperties();
 
+        // Get book
         Optional<Book> bookOptional = bookService.getBookById(r.getBook().getBookId());
-        Book book = bookOptional.orElseThrow(() ->
+        Book b = bookOptional.orElseThrow(() ->
                 new RuntimeException("Libro con id: " + r.getBook().getBookId() + " non trovato.")
         );
 
+        // Get customer
         Optional<Customer> customerOptional = customerService.getById(r.getCustomer().getId());
         Customer c = customerOptional.orElseThrow(() ->
                 new RuntimeException("Customer con id: " + r.getCustomer().getId() + " non trovato.")
         );
 
-        String body = """
-            <div style='font-family: Arial, sans-serif; padding: 15px; background-color: #f9f9f9;
-            border: 1px solid #ddd; border-radius: 8px; max-width: 600px;'>
-                <h2 style='color: #27ae60;'>✅ Your Reservation Has Been Created!</h2>
-                <p>Dear <b>%s %s</b>,</p>
-                <p>Your reservation <b>(ID: %d)</b> has been successfully created on <b style='color: #2c3e50;'>%s</b>.</p>
-                <p>Please remember to return your book before <b style='color: #e67e22;'>%s</b> to avoid late fees.</p>
-                <hr style='border: 1px solid #ddd;'>
-                <h3 style='color: #2980b9;'>📖 Book Details</h3>
-                <ul>
-                    <li><b>Title:</b> %s</li>
-                    <li><b>Author:</b> %s</li>
-                    <li><b>Publisher:</b> %s</li>
-                    <li><b>Year:</b> %d</li>
-                </ul>
-              <p>If you have any questions, feel free to reach out to us. <br>Thank you for using our library services!
-              <br><i>The Library Team</i></p>
-            </div>
-        """.formatted(
-                c.getFirstName(), c.getLastName(),
-                r.getResId(), r.getResStartDate(), r.getResExpiryDate(),
-                book.getTitle(), book.getAuthor(),
-                book.getPublisher(), book.getYear()
-        );
+        // Velocity context and merge
+        VelocityContext context = new VelocityContext();
+        context.put("r", r);
+        context.put("b", b);
+        context.put("c", c);
+        StringWriter writer = new StringWriter();
+        velocityEngine.getTemplate("templates/openReservationEmailTemplate.vm").merge(context, writer);
 
-        String subject = "Book Reservation Confirmation: " + book.getTitle();
+        String subject = "Book Reservation Confirmation: " + b.getTitle();
 
-        mailProperties.setBody(body);
+        // set mailProperties
+        mailProperties.setBody(writer.toString());
         mailProperties.setTo(c.getEmail());
         mailProperties.setSubject(subject);
 
         return mailProperties;
     }
 
-    public MailProperties buildClosedReservationMailProperties(Reservation r) {
+    public MailProperties buildCloseReservationMailProperties(Reservation r) {
         MailProperties mailProperties = new MailProperties();
 
+        // Get book
         Optional<Book> bookOptional = bookService.getBookById(r.getBook().getBookId());
-        Book book = bookOptional.orElseThrow(() ->
+        Book b = bookOptional.orElseThrow(() ->
                 new RuntimeException("Libro con id: " + r.getBook().getBookId() + " non trovato.")
         );
 
+        // Get customer
         Optional<Customer> customerOptional = customerService.getById(r.getCustomer().getId());
         Customer c = customerOptional.orElseThrow(() ->
                 new RuntimeException("Customer con id: " + r.getCustomer().getId() + " non trovato.")
         );
 
-        String body = """
-            <div style='font-family: Arial, sans-serif; padding: 15px; background-color: #f9f9f9;
-            border: 1px solid #ddd; border-radius: 8px; max-width: 600px;'>
-                <h2 style='color: #27ae60;'>✅ Your Reservation Has Been Closed Successfully!</h2>
-                <p>Dear <b>%s %s</b>,</p>
-                <p>Your reservation <b>(ID: %d)</b> has been successfully closed on <b style='color: #2c3e50;'>%s</b>.</p>
-                <hr style='border: 1px solid #ddd;'>
-                <h3 style='color: #2980b9;'>📖 Book Details</h3>
-                <ul>
-                    <li><b>Title:</b> %s</li>
-                    <li><b>Author:</b> %s</li>
-                    <li><b>Publisher:</b> %s</li>
-                    <li><b>Year:</b> %d</li>
-                </ul>
-              <p>If you have any questions, feel free to reach out to us. <br>Thank you for using our library services!
-              <br><i>The Library Team</i></p>
-            </div>
-        """.formatted(
-                c.getFirstName(), c.getLastName(),
-                r.getResId(), r.getResEndDate(),
-                book.getTitle(), book.getAuthor(),
-                book.getPublisher(), book.getYear()
-        );
+        // Velocity context and merge
+        VelocityContext context = new VelocityContext();
+        context.put("r", r);
+        context.put("b", b);
+        context.put("c", c);
+        StringWriter writer = new StringWriter();
+        velocityEngine.getTemplate("templates/closeReservationEmailTemplate.vm").merge(context, writer);
 
-        String subject = "Book Reservation Confirmation: " + book.getTitle();
+        String subject = "Book Reservation Confirmation: " + b.getTitle();
 
-        mailProperties.setBody(body);
+        // set mailProperties
+        mailProperties.setBody(writer.toString());
         mailProperties.setTo(c.getEmail());
         mailProperties.setSubject(subject);
 
         return mailProperties;
     }
-
 }

@@ -24,16 +24,16 @@ public class ReservationListener {
 
     @Async
     @EventListener
-    public void handleCreatedReservation(OpenReservationEvent event){
-        MailProperties mailProperties = reservationService.buildCreatedReservationMailProperties(event.getReservation());
+    public void onOpenReservation(OpenReservationEvent event){
+        MailProperties mailProperties = reservationService.buildOpenReservationMailProperties(event.getReservation());
         mailService.sendMail(mailProperties);
         logger.info("Created Reservation Email sent to: " + event.getReservation().getCustomer().getEmail());
     }
 
     @Async
     @EventListener
-    public void handleClosedReservation(CloseReservationEvent event){
-        MailProperties mailProperties = reservationService.buildClosedReservationMailProperties(event.getReservation());
+    public void onCloseReservation(CloseReservationEvent event){
+        MailProperties mailProperties = reservationService.buildCloseReservationMailProperties(event.getReservation());
         mailService.sendMail(mailProperties);
         logger.info("Closed Reservation Email sent to: " + event.getReservation().getCustomer().getEmail());
     }
