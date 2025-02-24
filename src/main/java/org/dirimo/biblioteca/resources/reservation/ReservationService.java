@@ -17,6 +17,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -126,16 +127,15 @@ public class ReservationService {
                 .orElseThrow(() -> new RuntimeException("Customer con id: "+r.getCustomer().getId()+" non trovato."));
 
         // Velocity context
-        Map<String, Object> context = Map.of(
-                "r", r,
-                "b", b,
-                "c", c
-        );
+        Map<String, Object> context = new HashMap<>();
+        context.put("r", r);
+        context.put("b", b);
+        context.put("c", c);
 
         String body = velocityTemplateService.render("expiringReservationEmailTemplate", context);
         String subject = "Reminder: Your Library Reservation Expires Soon! " +r.getResExpiryDate();
 
-        return new MailProperties(c.getEmail(), subject, body);
+        return new MailProperties(c.getEmail(), body, subject);
     }
 
     public MailProperties buildExpiredNoticeMailProperties(Reservation r) {
@@ -148,16 +148,15 @@ public class ReservationService {
                 .orElseThrow(() -> new RuntimeException("Customer con id: "+r.getCustomer().getId()+" non trovato."));
 
         // Velocity context
-        Map<String, Object> context = Map.of(
-                "r", r,
-                "b", b,
-                "c", c
-        );
+        Map<String, Object> context = new HashMap<>();
+        context.put("r", r);
+        context.put("b", b);
+        context.put("c", c);
 
         String body = velocityTemplateService.render("expiredReservationEmailTemplate", context);
         String subject = "Notice: Your Library Reservation Expired on "+r.getResExpiryDate();
 
-        return new MailProperties(c.getEmail(), subject, body);
+        return new MailProperties(c.getEmail(), body, subject);
     }
 
     public MailProperties buildOpenReservationMailProperties(Reservation r) {
@@ -170,16 +169,15 @@ public class ReservationService {
                 .orElseThrow(() -> new RuntimeException("Customer con id: "+r.getCustomer().getId()+" non trovato."));
 
         // Velocity context
-        Map<String, Object> context = Map.of(
-                "r", r,
-                "b", b,
-                "c", c
-        );
+        Map<String, Object> context = new HashMap<>();
+        context.put("r", r);
+        context.put("b", b);
+        context.put("c", c);
 
         String body = velocityTemplateService.render("openReservationEmailTemplate", context);
         String subject = "Book Reservation Confirmation: "+b.getTitle();
 
-        return new MailProperties(c.getEmail(), subject, body);
+        return new MailProperties(c.getEmail(), body, subject);
     }
 
     public MailProperties buildCloseReservationMailProperties(Reservation r) {
@@ -192,15 +190,14 @@ public class ReservationService {
                 .orElseThrow(() -> new RuntimeException("Customer con id: "+r.getCustomer().getId()+" non trovato."));
 
         // Velocity context
-        Map<String, Object> context = Map.of(
-                "r", r,
-                "b", b,
-                "c", c
-        );
+        Map<String, Object> context = new HashMap<>();
+        context.put("r", r);
+        context.put("b", b);
+        context.put("c", c);
 
         String body = velocityTemplateService.render("closeReservationEmailTemplate", context);
         String subject = "Book Reservation Confirmation: "+b.getTitle();
 
-        return new MailProperties(c.getEmail(), subject, body);
+        return new MailProperties(c.getEmail(), body, subject);
     }
 }

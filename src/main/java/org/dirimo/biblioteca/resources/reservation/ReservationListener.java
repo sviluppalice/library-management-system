@@ -6,8 +6,6 @@ import org.dirimo.biblioteca.mail.MailProperties;
 import org.dirimo.biblioteca.mail.MailService;
 import org.dirimo.biblioteca.resources.reservation.event.CloseReservationEvent;
 import org.dirimo.biblioteca.resources.reservation.event.OpenReservationEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -20,14 +18,12 @@ public class ReservationListener {
 
     private final ReservationService reservationService;
     private final MailService mailService;
-    private static final Logger logger = LoggerFactory.getLogger(ReservationListener.class);
 
     @Async
     @EventListener
     public void onOpenReservation(OpenReservationEvent event){
         MailProperties mailProperties = reservationService.buildOpenReservationMailProperties(event.getReservation());
         mailService.sendMail(mailProperties);
-        logger.info("Created Reservation Email sent to: " + event.getReservation().getCustomer().getEmail());
     }
 
     @Async
@@ -35,6 +31,5 @@ public class ReservationListener {
     public void onCloseReservation(CloseReservationEvent event){
         MailProperties mailProperties = reservationService.buildCloseReservationMailProperties(event.getReservation());
         mailService.sendMail(mailProperties);
-        logger.info("Closed Reservation Email sent to: " + event.getReservation().getCustomer().getEmail());
     }
 }
