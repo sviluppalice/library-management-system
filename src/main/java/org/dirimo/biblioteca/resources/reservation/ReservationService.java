@@ -2,9 +2,8 @@ package org.dirimo.biblioteca.resources.reservation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
 import org.dirimo.biblioteca.mail.MailProperties;
+import org.dirimo.biblioteca.mail.VelocityTemplateService;
 import org.dirimo.biblioteca.resources.book.Book;
 import org.dirimo.biblioteca.resources.book.BookService;
 import org.dirimo.biblioteca.resources.customer.Customer;
@@ -17,9 +16,9 @@ import org.dirimo.biblioteca.resources.stock.StockService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.io.StringWriter;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -32,7 +31,7 @@ public class ReservationService {
     private final BookService bookService;
     private final CustomerService customerService;
     private final ApplicationEventPublisher eventPublisher;
-    private final VelocityEngine velocityEngine;
+    private final VelocityTemplateService velocityTemplateService;
 
     // Get all reservations
     public List<Reservation> getAll() {
@@ -118,134 +117,90 @@ public class ReservationService {
 
     // email builders
     public MailProperties buildExpiringReminderMailProperties(Reservation r) {
-        MailProperties mailProperties = new MailProperties();
-
         // Get book
-        Optional<Book> bookOptional = bookService.getBookById(r.getBook().getBookId());
-        Book b = bookOptional.orElseThrow(() ->
-                new RuntimeException("Libro con id: " + r.getBook().getBookId() + " non trovato.")
-        );
+        Book b = bookService.getBookById(r.getBook().getBookId())
+                .orElseThrow(() -> new RuntimeException("Libro con id: "+r.getBook().getBookId()+" non trovato."));
 
         // Get customer
-        Optional<Customer> customerOptional = customerService.getById(r.getCustomer().getId());
-        Customer c = customerOptional.orElseThrow(() ->
-                new RuntimeException("Customer con id: " + r.getCustomer().getId() + " non trovato.")
+        Customer c = customerService.getById(r.getCustomer().getId())
+                .orElseThrow(() -> new RuntimeException("Customer con id: "+r.getCustomer().getId()+" non trovato."));
+
+        // Velocity context
+        Map<String, Object> context = Map.of(
+                "r", r,
+                "b", b,
+                "c", c
         );
 
-        // Velocity context and merge
-        VelocityContext context = new VelocityContext();
-        context.put("r", r);
-        context.put("b", b);
-        context.put("c", c);
-        StringWriter writer = new StringWriter();
-        velocityEngine.getTemplate("templates/expiringReservationEmailTemplate.vm").merge(context, writer);
+        String body = velocityTemplateService.render("expiringReservationEmailTemplate", context);
+        String subject = "Reminder: Your Library Reservation Expires Soon! " +r.getResExpiryDate();
 
-        String subject = "Reminder: Your Library Reservation Expires Soon! " + r.getResExpiryDate();
-
-        // set mailProperties
-        mailProperties.setBody(writer.toString());
-        mailProperties.setTo(r.getCustomer().getEmail());
-        mailProperties.setSubject(subject);
-
-        return mailProperties;
+        return new MailProperties(c.getEmail(), subject, body);
     }
 
     public MailProperties buildExpiredNoticeMailProperties(Reservation r) {
-        MailProperties mailProperties = new MailProperties();
-
         // Get book
-        Optional<Book> bookOptional = bookService.getBookById(r.getBook().getBookId());
-        Book b = bookOptional.orElseThrow(() ->
-                new RuntimeException("Libro con id: " + r.getBook().getBookId() + " non trovato.")
-        );
+        Book b = bookService.getBookById(r.getBook().getBookId())
+                .orElseThrow(() -> new RuntimeException("Libro con id: "+r.getBook().getBookId()+" non trovato."));
 
         // Get customer
-        Optional<Customer> customerOptional = customerService.getById(r.getCustomer().getId());
-        Customer c = customerOptional.orElseThrow(() ->
-                new RuntimeException("Customer con id: " + r.getCustomer().getId() + " non trovato.")
+        Customer c = customerService.getById(r.getCustomer().getId())
+                .orElseThrow(() -> new RuntimeException("Customer con id: "+r.getCustomer().getId()+" non trovato."));
+
+        // Velocity context
+        Map<String, Object> context = Map.of(
+                "r", r,
+                "b", b,
+                "c", c
         );
 
-        // Velocity context and merge
-        VelocityContext context = new VelocityContext();
-        context.put("r", r);
-        context.put("b", b);
-        context.put("c", c);
-        StringWriter writer = new StringWriter();
-        velocityEngine.getTemplate("templates/expiredReservationEmailTemplate.vm").merge(context, writer);
+        String body = velocityTemplateService.render("expiredReservationEmailTemplate", context);
+        String subject = "Notice: Your Library Reservation Expired on "+r.getResExpiryDate();
 
-        String subject = "Notice: Your Library Reservation Expired on " + r.getResExpiryDate();
-
-        // set mailProperties
-        mailProperties.setBody(writer.toString());
-        mailProperties.setTo(c.getEmail());
-        mailProperties.setSubject(subject);
-
-        return mailProperties;
+        return new MailProperties(c.getEmail(), subject, body);
     }
 
     public MailProperties buildOpenReservationMailProperties(Reservation r) {
-        MailProperties mailProperties = new MailProperties();
-
         // Get book
-        Optional<Book> bookOptional = bookService.getBookById(r.getBook().getBookId());
-        Book b = bookOptional.orElseThrow(() ->
-                new RuntimeException("Libro con id: " + r.getBook().getBookId() + " non trovato.")
-        );
+        Book b = bookService.getBookById(r.getBook().getBookId())
+                .orElseThrow(() -> new RuntimeException("Libro con id: "+r.getBook().getBookId()+" non trovato."));
 
         // Get customer
-        Optional<Customer> customerOptional = customerService.getById(r.getCustomer().getId());
-        Customer c = customerOptional.orElseThrow(() ->
-                new RuntimeException("Customer con id: " + r.getCustomer().getId() + " non trovato.")
+        Customer c = customerService.getById(r.getCustomer().getId())
+                .orElseThrow(() -> new RuntimeException("Customer con id: "+r.getCustomer().getId()+" non trovato."));
+
+        // Velocity context
+        Map<String, Object> context = Map.of(
+                "r", r,
+                "b", b,
+                "c", c
         );
 
-        // Velocity context and merge
-        VelocityContext context = new VelocityContext();
-        context.put("r", r);
-        context.put("b", b);
-        context.put("c", c);
-        StringWriter writer = new StringWriter();
-        velocityEngine.getTemplate("templates/openReservationEmailTemplate.vm").merge(context, writer);
+        String body = velocityTemplateService.render("openReservationEmailTemplate", context);
+        String subject = "Book Reservation Confirmation: "+b.getTitle();
 
-        String subject = "Book Reservation Confirmation: " + b.getTitle();
-
-        // set mailProperties
-        mailProperties.setBody(writer.toString());
-        mailProperties.setTo(c.getEmail());
-        mailProperties.setSubject(subject);
-
-        return mailProperties;
+        return new MailProperties(c.getEmail(), subject, body);
     }
 
     public MailProperties buildCloseReservationMailProperties(Reservation r) {
-        MailProperties mailProperties = new MailProperties();
-
         // Get book
-        Optional<Book> bookOptional = bookService.getBookById(r.getBook().getBookId());
-        Book b = bookOptional.orElseThrow(() ->
-                new RuntimeException("Libro con id: " + r.getBook().getBookId() + " non trovato.")
-        );
+        Book b = bookService.getBookById(r.getBook().getBookId())
+                .orElseThrow(() -> new RuntimeException("Libro con id: "+r.getBook().getBookId()+" non trovato."));
 
         // Get customer
-        Optional<Customer> customerOptional = customerService.getById(r.getCustomer().getId());
-        Customer c = customerOptional.orElseThrow(() ->
-                new RuntimeException("Customer con id: " + r.getCustomer().getId() + " non trovato.")
+        Customer c = customerService.getById(r.getCustomer().getId())
+                .orElseThrow(() -> new RuntimeException("Customer con id: "+r.getCustomer().getId()+" non trovato."));
+
+        // Velocity context
+        Map<String, Object> context = Map.of(
+                "r", r,
+                "b", b,
+                "c", c
         );
 
-        // Velocity context and merge
-        VelocityContext context = new VelocityContext();
-        context.put("r", r);
-        context.put("b", b);
-        context.put("c", c);
-        StringWriter writer = new StringWriter();
-        velocityEngine.getTemplate("templates/closeReservationEmailTemplate.vm").merge(context, writer);
+        String body = velocityTemplateService.render("closeReservationEmailTemplate", context);
+        String subject = "Book Reservation Confirmation: "+b.getTitle();
 
-        String subject = "Book Reservation Confirmation: " + b.getTitle();
-
-        // set mailProperties
-        mailProperties.setBody(writer.toString());
-        mailProperties.setTo(c.getEmail());
-        mailProperties.setSubject(subject);
-
-        return mailProperties;
+        return new MailProperties(c.getEmail(), subject, body);
     }
 }
