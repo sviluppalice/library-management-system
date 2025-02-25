@@ -3,7 +3,7 @@ package org.dirimo.biblioteca.resources.reservation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dirimo.biblioteca.mail.MailProperties;
-import org.dirimo.biblioteca.mail.VelocityTemplateService;
+import org.dirimo.biblioteca.mail.MailService;
 import org.dirimo.biblioteca.resources.book.Book;
 import org.dirimo.biblioteca.resources.book.BookService;
 import org.dirimo.biblioteca.resources.customer.Customer;
@@ -13,6 +13,7 @@ import org.dirimo.biblioteca.resources.reservation.event.CloseReservationEvent;
 import org.dirimo.biblioteca.resources.reservation.event.OpenReservationEvent;
 import org.dirimo.biblioteca.resources.stock.Stock;
 import org.dirimo.biblioteca.resources.stock.StockService;
+import org.dirimo.biblioteca.resources.velocityTemplate.VtemplateService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,8 @@ public class ReservationService {
     private final BookService bookService;
     private final CustomerService customerService;
     private final ApplicationEventPublisher eventPublisher;
-    private final VelocityTemplateService velocityTemplateService;
+    private final VtemplateService vtemplateService;
+    private final MailService mailService;
 
     // Get all reservations
     public List<Reservation> getAll() {
@@ -116,6 +118,18 @@ public class ReservationService {
         return reservationRepository.findExpired(status, today);
     }
 
+
+    // email senders
+    public void sendExpiringReservationMail(Reservation r) {
+        MailProperties mailProperties = buildExpiringReminderMailProperties(r);
+        mailService.sendMail(mailProperties);
+    }
+
+    public void sendExpiredReservationMail(Reservation r) {
+        MailProperties mailProperties = buildExpiredNoticeMailProperties(r);
+        mailService.sendMail(mailProperties);
+    }
+
     // email builders
     public MailProperties buildExpiringReminderMailProperties(Reservation r) {
         // Get book
@@ -127,12 +141,12 @@ public class ReservationService {
                 .orElseThrow(() -> new RuntimeException("Customer con id: "+r.getCustomer().getId()+" non trovato."));
 
         // Velocity context
-        Map<String, Object> context = new HashMap<>();
-        context.put("r", r);
-        context.put("b", b);
-        context.put("c", c);
+        Map<String, Object> model = new HashMap<>();
+        model.put("r", r);
+        model.put("b", b);
+        model.put("c", c);
 
-        String body = velocityTemplateService.render("expiringReservationEmailTemplate", context);
+        String body = vtemplateService.render("expiringReservation", model);
         String subject = "Reminder: Your Library Reservation Expires Soon! " +r.getResExpiryDate();
 
         return new MailProperties(c.getEmail(), body, subject);
@@ -148,12 +162,12 @@ public class ReservationService {
                 .orElseThrow(() -> new RuntimeException("Customer con id: "+r.getCustomer().getId()+" non trovato."));
 
         // Velocity context
-        Map<String, Object> context = new HashMap<>();
-        context.put("r", r);
-        context.put("b", b);
-        context.put("c", c);
+        Map<String, Object> model = new HashMap<>();
+        model.put("r", r);
+        model.put("b", b);
+        model.put("c", c);
 
-        String body = velocityTemplateService.render("expiredReservationEmailTemplate", context);
+        String body = vtemplateService.render("expiringReservation", model);
         String subject = "Notice: Your Library Reservation Expired on "+r.getResExpiryDate();
 
         return new MailProperties(c.getEmail(), body, subject);
@@ -174,7 +188,7 @@ public class ReservationService {
         context.put("b", b);
         context.put("c", c);
 
-        String body = velocityTemplateService.render("openReservationEmailTemplate", context);
+        String body = vtemplateService.render("openReservation", context);
         String subject = "Book Reservation Confirmation: "+b.getTitle();
 
         return new MailProperties(c.getEmail(), body, subject);
@@ -195,9 +209,10 @@ public class ReservationService {
         context.put("b", b);
         context.put("c", c);
 
-        String body = velocityTemplateService.render("closeReservationEmailTemplate", context);
+        String body = vtemplateService.render("closeReservation", context);
         String subject = "Book Reservation Confirmation: "+b.getTitle();
 
         return new MailProperties(c.getEmail(), body, subject);
     }
+
 }

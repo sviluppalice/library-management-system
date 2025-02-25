@@ -18,4 +18,6 @@ public class VelocityConfig {
         velocityEngine.init(props);
         return velocityEngine;
     }
+
+    //aggiungere bean object mapper istanza singleton
 }

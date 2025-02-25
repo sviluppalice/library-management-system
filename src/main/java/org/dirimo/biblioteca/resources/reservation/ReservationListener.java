@@ -29,6 +29,7 @@ public class ReservationListener {
     @Async
     @EventListener
     public void onCloseReservation(CloseReservationEvent event){
+        //reservationService.sendCloseReservationMail; + aggiungi endpoint in caso vada chiamata al di fuori del listener
         MailProperties mailProperties = reservationService.buildCloseReservationMailProperties(event.getReservation());
         mailService.sendMail(mailProperties);
     }
