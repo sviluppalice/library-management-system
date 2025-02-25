@@ -18,7 +18,7 @@ import java.util.List;
 @Transactional
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("VelocityTemplate")
+@RequestMapping("Template")
 public class TemplateController {
 
     private final TemplateService templateService;

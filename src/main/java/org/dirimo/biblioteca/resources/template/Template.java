@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.dirimo.biblioteca.common.BaseEntity;
+import org.dirimo.biblioteca.resources.template.enumerated.TemplateCategory;
 import org.dirimo.biblioteca.resources.template.enumerated.TemplateType;
 
 
@@ -37,4 +38,7 @@ public class Template extends BaseEntity {
 
     @Column(name="TYPE")
     private TemplateType type;
+
+    @Column(name="CATEGORY")
+    private TemplateCategory category;
 }
