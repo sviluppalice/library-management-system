@@ -1,4 +1,4 @@
-package org.dirimo.biblioteca.resources.velocityTemplate;
+package org.dirimo.biblioteca.resources.template;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,38 +19,38 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("VelocityTemplate")
-public class VtemplateController {
+public class TemplateController {
 
-    private final VtemplateService vtemplateService;
+    private final TemplateService templateService;
 
     // Get all
     @GetMapping("/")
-    public List<Vtemplate> getAll() {
-        return vtemplateService.findAll();
+    public List<Template> getAll() {
+        return templateService.findAll();
     }
 
     // Get template by name
     @GetMapping("/{name}")
-    public Vtemplate getByName(@PathVariable String name) {
-        return vtemplateService.getByName(name)
+    public Template getByName(@PathVariable String name) {
+        return templateService.getByName(name)
                 .orElseThrow(() -> new RuntimeException("Template con nome " + name + " non trovata."));
     }
 
     // Add a new template
     @PostMapping("/")
-    public Vtemplate create(@RequestBody Vtemplate vtemplate) {
-        return vtemplateService.create(vtemplate);
+    public Template create(@RequestBody Template template) {
+        return templateService.create(template);
     }
 
     // Update a template
     @PutMapping("/{id}")
-    public Vtemplate update(@PathVariable Long id, @RequestBody Vtemplate vtemplate) {
-        return vtemplateService.update(id, vtemplate);
+    public Template update(@PathVariable Long id, @RequestBody Template template) {
+        return templateService.update(id, template);
     }
 
     // Delete a template
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        vtemplateService.delete(id);
+        templateService.delete(id);
     }
 }

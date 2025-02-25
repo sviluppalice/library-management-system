@@ -1,4 +1,4 @@
-package org.dirimo.biblioteca.resources.velocityTemplate;
+package org.dirimo.biblioteca.resources.template;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.velocity.VelocityContext;
@@ -13,41 +13,41 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class VtemplateService {
+public class TemplateService {
 
     private final VelocityEngine velocityEngine;
-    private final VtemplateRepository vtemplateRepository;
+    private final TemplateRepository templateRepository;
 
     // Get all
-    public List<Vtemplate> findAll() {
-        return vtemplateRepository.findAll();
+    public List<Template> findAll() {
+        return templateRepository.findAll();
     }
 
     // Get by name
-    public Optional<Vtemplate> getByName(String name) {
-        return vtemplateRepository.findByName(name);
+    public Optional<Template> getByName(String name) {
+        return templateRepository.findByName(name);
     }
 
     // Create template
-    public Vtemplate create(Vtemplate vtemplate) {
-        return vtemplateRepository.save(vtemplate);
+    public Template create(Template template) {
+        return templateRepository.save(template);
     }
 
     // Update template
-    public Vtemplate update(Long id, Vtemplate vtemplate) {
-        vtemplateRepository.findById(id)
+    public Template update(Long id, Template template) {
+        templateRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("VelocityTemplate con id: " + id + " non trovata"));
-        return vtemplateRepository.save(vtemplate);
+        return templateRepository.save(template);
     }
 
     // Delete template
     public void delete(Long id) {
-        vtemplateRepository.deleteById(id);
+        templateRepository.deleteById(id);
     }
 
     // Puts together template and data
     public String render(String templateName, Map<String, Object> model) {
-        Vtemplate template = vtemplateRepository.findByName(templateName)
+        Template template = templateRepository.findByName(templateName)
                 .orElseThrow(() -> new RuntimeException("Template con nome: "+templateName+" non trovato."));
 
         String templateBody = template.getBody();

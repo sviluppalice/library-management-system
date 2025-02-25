@@ -13,7 +13,7 @@ import org.dirimo.biblioteca.resources.reservation.event.CloseReservationEvent;
 import org.dirimo.biblioteca.resources.reservation.event.OpenReservationEvent;
 import org.dirimo.biblioteca.resources.stock.Stock;
 import org.dirimo.biblioteca.resources.stock.StockService;
-import org.dirimo.biblioteca.resources.velocityTemplate.VtemplateService;
+import org.dirimo.biblioteca.resources.template.TemplateService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +33,7 @@ public class ReservationService {
     private final BookService bookService;
     private final CustomerService customerService;
     private final ApplicationEventPublisher eventPublisher;
-    private final VtemplateService vtemplateService;
+    private final TemplateService templateService;
     private final MailService mailService;
 
     // Get all reservations
@@ -146,7 +146,7 @@ public class ReservationService {
         model.put("b", b);
         model.put("c", c);
 
-        String body = vtemplateService.render("expiringReservation", model);
+        String body = templateService.render("expiringReservation", model);
         String subject = "Reminder: Your Library Reservation Expires Soon! " +r.getResExpiryDate();
 
         return new MailProperties(c.getEmail(), body, subject);
@@ -167,7 +167,7 @@ public class ReservationService {
         model.put("b", b);
         model.put("c", c);
 
-        String body = vtemplateService.render("expiringReservation", model);
+        String body = templateService.render("expiringReservation", model);
         String subject = "Notice: Your Library Reservation Expired on "+r.getResExpiryDate();
 
         return new MailProperties(c.getEmail(), body, subject);
@@ -188,7 +188,7 @@ public class ReservationService {
         context.put("b", b);
         context.put("c", c);
 
-        String body = vtemplateService.render("openReservation", context);
+        String body = templateService.render("openReservation", context);
         String subject = "Book Reservation Confirmation: "+b.getTitle();
 
         return new MailProperties(c.getEmail(), body, subject);
@@ -209,7 +209,7 @@ public class ReservationService {
         context.put("b", b);
         context.put("c", c);
 
-        String body = vtemplateService.render("closeReservation", context);
+        String body = templateService.render("closeReservation", context);
         String subject = "Book Reservation Confirmation: "+b.getTitle();
 
         return new MailProperties(c.getEmail(), body, subject);

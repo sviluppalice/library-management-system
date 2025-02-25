@@ -1,4 +1,4 @@
-package org.dirimo.biblioteca.resources.velocityTemplate;
+package org.dirimo.biblioteca.resources.template;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.dirimo.biblioteca.common.BaseEntity;
-import org.dirimo.biblioteca.resources.velocityTemplate.enumerated.VelocityTemplateType;
+import org.dirimo.biblioteca.resources.template.enumerated.TemplateType;
 
 
 @Entity
@@ -21,7 +21,7 @@ import org.dirimo.biblioteca.resources.velocityTemplate.enumerated.VelocityTempl
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Vtemplate extends BaseEntity {
+public class Template extends BaseEntity {
 
     @Id
     @Column(name="ID")
@@ -36,5 +36,5 @@ public class Vtemplate extends BaseEntity {
     private String body;
 
     @Column(name="TYPE")
-    private VelocityTemplateType type;
+    private TemplateType type;
 }
