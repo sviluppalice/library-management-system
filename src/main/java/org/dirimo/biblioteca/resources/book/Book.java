@@ -52,4 +52,7 @@ public class Book {
     @Column(name = "lingua", nullable = false)
     private String language;
 
+    @Column(name = "descrizione", nullable = false)
+    private String description;
+
 }
