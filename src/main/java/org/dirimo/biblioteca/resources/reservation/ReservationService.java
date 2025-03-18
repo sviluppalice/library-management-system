@@ -13,17 +13,20 @@ import org.dirimo.biblioteca.resources.book.BookService;
 import org.dirimo.biblioteca.resources.customer.Customer;
 import org.dirimo.biblioteca.resources.customer.CustomerRepository;
 import org.dirimo.biblioteca.resources.customer.CustomerService;
-import org.dirimo.biblioteca.resources.reservation.dto.ReservationDTO;
+import org.dirimo.biblioteca.resources.reservation.action.OpenReservationAction;
 import org.dirimo.biblioteca.resources.reservation.enumerated.ReservationStatus;
 import org.dirimo.biblioteca.resources.reservation.event.CloseReservationEvent;
-import org.dirimo.biblioteca.resources.reservation.event.OpenReservationEvent;
 import org.dirimo.biblioteca.resources.stock.Stock;
 import org.dirimo.biblioteca.resources.stock.StockService;
 import org.dirimo.biblioteca.resources.template.TemplateService;
+import org.dirimo.commonlibrary.dto.BookDTO;
+import org.dirimo.commonlibrary.dto.CustomerDTO;
+import org.dirimo.commonlibrary.dto.ReservationDTO;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +61,16 @@ public class ReservationService {
     // Add a new reservation
     public Reservation create(Reservation reservation) {
         return reservationRepository.save(reservation);
+    }
+
+    // Add in bulk
+    public List<Reservation> createBulk(List<OpenReservationAction> actions) {
+        List<Reservation> reservations = new ArrayList<>();
+        for (OpenReservationAction action : actions) {
+            Reservation savedReservation = open(action.getReservation(), action.getDate());
+            reservations.add(savedReservation);
+        }
+        return reservations;
     }
 
     // Update a reservation
@@ -125,7 +138,7 @@ public class ReservationService {
             Reservation savedReservation = reservationRepository.save(reservation);
 
             // Set DTO
-            ReservationDTO reservationDTO = ReservationDTO.fromReservation(savedReservation);
+            ReservationDTO reservationDTO = ReservationService.fromReservation(savedReservation);
 
             // Converts DTO in JSON message and sends
             try {
@@ -138,7 +151,7 @@ public class ReservationService {
             }
 
             // Publishes event
-            eventPublisher.publishEvent(new OpenReservationEvent(this, savedReservation));
+            //eventPublisher.publishEvent(new OpenReservationEvent(this, savedReservation));
             return savedReservation;
         }
     }
@@ -246,6 +259,45 @@ public class ReservationService {
         String subject = "Book Reservation Confirmation: "+b.getTitle();
 
         return new MailProperties(c.getEmail(), body, subject);
+    }
+
+    public static ReservationDTO fromReservation(Reservation reservation) {
+        if (reservation == null) {
+            return null;
+        }
+
+        BookDTO bookDTO = null;
+        if (reservation.getBook() != null) {
+            bookDTO = new BookDTO(
+                    reservation.getBook().getBookId(),
+                    reservation.getBook().getIsbn(),
+                    reservation.getBook().getTitle(),
+                    reservation.getBook().getAuthor(),
+                    reservation.getBook().getYear(),
+                    reservation.getBook().getGenre(),
+                    reservation.getBook().getPublisher(),
+                    reservation.getBook().getLanguage(),
+                    reservation.getBook().getDescription()
+            );
+        }
+
+        CustomerDTO customerDTO = null;
+        if (reservation.getCustomer() != null) {
+            customerDTO = new CustomerDTO(
+                    reservation.getCustomer().getId(),
+                    reservation.getCustomer().getFirstName(),
+                    reservation.getCustomer().getLastName(),
+                    reservation.getCustomer().getEmail()
+            );
+        }
+
+        return new ReservationDTO(
+                reservation.getResId(),
+                bookDTO,
+                customerDTO,
+                reservation.getResStartDate(),
+                reservation.getResEndDate()
+        );
     }
 
 }

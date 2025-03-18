@@ -31,8 +31,8 @@ public class Book {
     @JoinColumn(name = "shelf_id")
     private Shelf shelf;
 
-    @Column(name = "isbn_ean", nullable = false, length = 13)
-    private Long codISBN;
+    @Column(name = "isbn", nullable = false)
+    private String isbn;
 
     @Column(name = "titolo", nullable = false)
     private String title;
@@ -41,7 +41,7 @@ public class Book {
     private String author;
 
     @Column(name = "anno", nullable = false, length = 4)
-    private Long year;
+    private Integer year;
 
     @Column(name = "genere", nullable = false)
     private String genre;

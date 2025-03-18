@@ -49,6 +49,12 @@ public class BookController {
         return bookService.create(book);
     }
 
+    // Add in bulk
+    @PostMapping("/bulk")
+    public List<Book> createBulk(@RequestBody List<Book> books) {
+        return bookService.createBulk(books);
+    }
+
     // Update a book
     @PutMapping("/{id}")
     public Book update(@PathVariable Long id, @RequestBody Book book) {

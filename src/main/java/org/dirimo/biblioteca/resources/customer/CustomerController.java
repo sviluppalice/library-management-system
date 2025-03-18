@@ -41,6 +41,12 @@ public class CustomerController {
         return customerService.create(customer);
     }
 
+    // Add in bulk
+    @PostMapping("/bulk")
+    public List<Customer> createBulk(@RequestBody List<Customer> customers) {
+        return customerService.createBulk(customers);
+    }
+
     // Update a customer
     @PutMapping("/{id}")
     public Customer update(@PathVariable Long id, @RequestBody Customer customer) {

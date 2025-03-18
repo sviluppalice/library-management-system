@@ -1,6 +1,8 @@
 package org.dirimo.biblioteca.resources.book;
 
 import lombok.RequiredArgsConstructor;
+import org.dirimo.biblioteca.resources.stock.Stock;
+import org.dirimo.biblioteca.resources.stock.StockService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.Optional;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final StockService stockService;
 
     //Singleton: una sola istanza di una classe in tutto il sistema
 
@@ -32,6 +35,22 @@ public class BookService {
     // Add a new book
     public Book create(Book book) {
         return bookRepository.save(book);
+    }
+
+    // Add in bulk
+    public List<Book> createBulk(List<Book> books) {
+        List<Book> savedBooks = bookRepository.saveAll(books);
+
+        for (Book book : savedBooks) {
+            Stock stock = new Stock();
+            stock.setBook(book);
+            stock.setTotalCopies(50);
+            stock.setAvailableCopies(50);
+
+            stockService.create(stock);
+        }
+
+        return savedBooks;
     }
 
     // Update a book

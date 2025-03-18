@@ -52,6 +52,12 @@ public class ReservationController {
        return reservationService.open(action.getReservation(), action.getDate());
     }
 
+    // Add in bulk
+    @PostMapping("/bulk")
+    public List<Reservation> createBulk(@RequestBody List<OpenReservationAction> actions) {
+        return reservationService.createBulk(actions);
+    }
+
     // Update a reservation
     @PutMapping("/{id}")
     public Reservation update(@PathVariable Long id, @RequestBody Reservation reservation) {

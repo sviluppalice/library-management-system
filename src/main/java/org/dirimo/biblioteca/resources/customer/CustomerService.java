@@ -30,6 +30,10 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
+    public List<Customer> createBulk(List<Customer> customers) {
+        return customerRepository.saveAll(customers);
+    }
+
     public void delete(Long id) {
         customerRepository.deleteById(id);
     }
