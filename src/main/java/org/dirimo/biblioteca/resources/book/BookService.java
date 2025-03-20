@@ -15,8 +15,6 @@ public class BookService {
     private final BookRepository bookRepository;
     private final StockService stockService;
 
-    //Singleton: una sola istanza di una classe in tutto il sistema
-
     // Get all books
     public List<Book> getAll() {
         return bookRepository.findAll();

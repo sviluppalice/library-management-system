@@ -27,7 +27,7 @@ public class StockService {
 
     // Get stock by book ID
     public Optional<Stock> getByBookId(Long bookId) {
-        return stockRepository.findByBookBookId(bookId);
+        return stockRepository.findByBookId(bookId);
     }
 
     // Get stock by book
@@ -37,9 +37,9 @@ public class StockService {
 
     // Add a new stock
     public Stock create(Stock stock) {
-        Long bookId = stock.getBook().getBookId();
-        Book wholeBook = bookRepository.findById(bookId)
-                .orElseThrow(() -> new RuntimeException("Libro con Id " + bookId + " non trovato"));
+        Long id = stock.getBook().getId();
+        Book wholeBook = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Libro con Id " + id + " non trovato"));
         stock.setBook(wholeBook);
         return stockRepository.save(stock);
     }

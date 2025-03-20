@@ -12,8 +12,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.dirimo.biblioteca.common.BaseEntity;
 import org.dirimo.biblioteca.resources.shelf.Shelf;
-
 
 @Entity
 @Table(name="Books")
@@ -21,11 +21,11 @@ import org.dirimo.biblioteca.resources.shelf.Shelf;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Book {
+public class Book extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bookId;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "shelf_id")

@@ -2,12 +2,9 @@ package org.dirimo.biblioteca.resources.reservation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dirimo.biblioteca.mail.MailProperties;
 import org.dirimo.biblioteca.mail.MailService;
-import org.dirimo.biblioteca.resources.reservation.event.CloseReservationEvent;
-import org.dirimo.biblioteca.resources.reservation.event.OpenReservationEvent;
+import org.dirimo.commonlibrary.event.GenericModuleEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 
@@ -19,18 +16,17 @@ public class ReservationListener {
     private final ReservationService reservationService;
     private final MailService mailService;
 
-    @Async
     @EventListener
-    public void onOpenReservation(OpenReservationEvent event){
-        MailProperties mailProperties = reservationService.buildOpenReservationMailProperties(event.getReservation());
-        mailService.sendMail(mailProperties);
-    }
+    public void handleReservationEvent(GenericModuleEvent<Reservation> event) {
+        switch (event.getEventType()) {
+            case OPENED -> {
+                reservationService.sendOpenReservationJMS(event.getPayload());
+                //reservationService.sendOpenReservationMail(event.getPayload());
+            }
 
-    @Async
-    @EventListener
-    public void onCloseReservation(CloseReservationEvent event){
-        //reservationService.sendCloseReservationMail; + aggiungi endpoint in caso vada chiamata al di fuori del listener
-        MailProperties mailProperties = reservationService.buildCloseReservationMailProperties(event.getReservation());
-        mailService.sendMail(mailProperties);
+            case CLOSED -> {
+                //reservationService.sendCloseReservationMail(event.getPayload());
+            }
+        }
     }
 }

@@ -20,7 +20,6 @@ public class ReservationScheduler {
     private final ReservationService reservationService;
     private final MailService mailService;
 
-    // @Async - ricordarmi perché l'ho messo ??? comunque va tolto rimuove transazionalità
     @Scheduled(cron = "0 0 9 * * *")//"0 * * * * *" ogni minuto - SOLO TESTING
     public void expiringReservationReminder() {
         LocalDate startDate = LocalDate.now();
@@ -29,11 +28,10 @@ public class ReservationScheduler {
 
         List<Reservation> expiringReservations = reservationService.getExpiring(status, startDate, endDate);
         for (Reservation r : expiringReservations) {
-            reservationService.sendExpiringReservationMail(r);
+            reservationService.sendExpiringReminderMail(r);
         }
     }
 
-    // @Async - ricordarmi perché l'ho messo ??? comunque va tolto rimuove transazionalità
     @Scheduled(cron = "0 0 9 * * *")//"0 * * * * *" ogni minuto - SOLO TESTING
     public void expiredReservationNotice(){
         LocalDate today = LocalDate.now();
@@ -41,7 +39,7 @@ public class ReservationScheduler {
 
         List<Reservation> expiredReservations = reservationService.getExpired(status, today);
         for (Reservation r : expiredReservations) {
-            reservationService.sendExpiredReservationMail(r);
+            reservationService.sendExpiredNoticeMail(r);
         }
     }
 }

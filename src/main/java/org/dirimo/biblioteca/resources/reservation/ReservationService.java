@@ -15,13 +15,14 @@ import org.dirimo.biblioteca.resources.customer.CustomerRepository;
 import org.dirimo.biblioteca.resources.customer.CustomerService;
 import org.dirimo.biblioteca.resources.reservation.action.OpenReservationAction;
 import org.dirimo.biblioteca.resources.reservation.enumerated.ReservationStatus;
-import org.dirimo.biblioteca.resources.reservation.event.CloseReservationEvent;
 import org.dirimo.biblioteca.resources.stock.Stock;
 import org.dirimo.biblioteca.resources.stock.StockService;
 import org.dirimo.biblioteca.resources.template.TemplateService;
 import org.dirimo.commonlibrary.dto.BookDTO;
 import org.dirimo.commonlibrary.dto.CustomerDTO;
 import org.dirimo.commonlibrary.dto.ReservationDTO;
+import org.dirimo.commonlibrary.event.EventType;
+import org.dirimo.commonlibrary.event.GenericModuleEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -97,35 +98,35 @@ public class ReservationService {
         Book book = reservation.getBook();
         Optional<Stock> stockOptional = stockService.getByBook(book);
         Stock stock = stockOptional.orElseThrow(() ->
-                new RuntimeException("Libro con id: " + book.getBookId() + " non trovato.")
+                new RuntimeException("Libro con id: " + book.getId() + " non trovato.")
         );
         stock.handleQuantity(1);
 
         // Publishes event
-        eventPublisher.publishEvent(new CloseReservationEvent(this, reservation));
+        eventPublisher.publishEvent(new GenericModuleEvent<>(this, EventType.CLOSED, reservation));
 
         return reservation;
     }
 
     public Reservation open(Reservation reservation, LocalDate date) {
         // Check book existence
-        Book book = bookRepository.findByIdBookDetails(reservation.getBook().getBookId())
+        Book book = bookRepository.findById(reservation.getBook().getId())
                 .orElseThrow(() ->
-                        new RuntimeException("Libro con id: " + reservation.getBook().getBookId() + " non trovato."));
+                        new RuntimeException("Libro con id: " + reservation.getBook().getId() + " non trovato."));
         // Check customer existence
-        Customer customer = customerRepository.findByIdCustomerDetails(reservation.getCustomer().getId())
+        Customer customer = customerRepository.findById(reservation.getCustomer().getId())
                 .orElseThrow(() ->
                         new RuntimeException("Customer con id: " + reservation.getCustomer().getId() + " non trovato."));
 
         // Check stock existence
         Optional<Stock> stockOptional = stockService.getByBook(book);
         Stock stock = stockOptional.orElseThrow(() ->
-                new RuntimeException("Libro con id: " + book.getBookId() + " non trovato.")
+                new RuntimeException("Libro con id: " + book.getId() + " non trovato.")
         );
 
         // Check copies availability and if available, creates reservation
         if (stock.getAvailableCopies() <= 0) {
-            throw new RuntimeException("Non ci sono copie del libro " + book.getBookId() + " disponibili al momento.");
+            throw new RuntimeException("Non ci sono copie del libro " + book.getId() + " disponibili al momento.");
         } else {
             stock.handleQuantity(-1);
             stockService.update(stock.getStockId(), stock);
@@ -137,18 +138,7 @@ public class ReservationService {
 
             Reservation savedReservation = reservationRepository.save(reservation);
 
-            // Set DTO
-            ReservationDTO reservationDTO = ReservationService.fromReservation(savedReservation);
-
-            // Converts DTO in JSON message and sends
-            try {
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.registerModule(new JavaTimeModule());
-                String reservationJson = objectMapper.writeValueAsString(reservationDTO);
-                jmsService.sendMessage(reservationJson);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            eventPublisher.publishEvent(new GenericModuleEvent<>(this, EventType.OPENED, savedReservation));
 
             // Publishes event
             //eventPublisher.publishEvent(new OpenReservationEvent(this, savedReservation));
@@ -164,23 +154,11 @@ public class ReservationService {
         return reservationRepository.findExpired(status, today);
     }
 
-
     // email senders
-    public void sendExpiringReservationMail(Reservation r) {
-        MailProperties mailProperties = buildExpiringReminderMailProperties(r);
-        mailService.sendMail(mailProperties);
-    }
-
-    public void sendExpiredReservationMail(Reservation r) {
-        MailProperties mailProperties = buildExpiredNoticeMailProperties(r);
-        mailService.sendMail(mailProperties);
-    }
-
-    // email builders
-    public MailProperties buildExpiringReminderMailProperties(Reservation r) {
+    public void sendExpiringReminderMail(Reservation r) {
         // Get book
-        Book b = bookService.getBookById(r.getBook().getBookId())
-                .orElseThrow(() -> new RuntimeException("Libro con id: "+r.getBook().getBookId()+" non trovato."));
+        Book b = bookService.getBookById(r.getBook().getId())
+                .orElseThrow(() -> new RuntimeException("Libro con id: "+r.getBook().getId()+" non trovato."));
 
         // Get customer
         Customer c = customerService.getById(r.getCustomer().getId())
@@ -195,13 +173,13 @@ public class ReservationService {
         String body = templateService.render("expiringReservation", model);
         String subject = "Reminder: Your Library Reservation Expires Soon! " +r.getResExpiryDate();
 
-        return new MailProperties(c.getEmail(), body, subject);
+        mailService.sendMail(new MailProperties(c.getEmail(), body, subject));
     }
 
-    public MailProperties buildExpiredNoticeMailProperties(Reservation r) {
+    public void sendExpiredNoticeMail(Reservation r) {
         // Get book
-        Book b = bookService.getBookById(r.getBook().getBookId())
-                .orElseThrow(() -> new RuntimeException("Libro con id: "+r.getBook().getBookId()+" non trovato."));
+        Book b = bookService.getBookById(r.getBook().getId())
+                .orElseThrow(() -> new RuntimeException("Libro con id: "+r.getBook().getId()+" non trovato."));
 
         // Get customer
         Customer c = customerService.getById(r.getCustomer().getId())
@@ -216,13 +194,13 @@ public class ReservationService {
         String body = templateService.render("expiringReservation", model);
         String subject = "Notice: Your Library Reservation Expired on "+r.getResExpiryDate();
 
-        return new MailProperties(c.getEmail(), body, subject);
+        mailService.sendMail(new MailProperties(c.getEmail(), body, subject));
     }
 
-    public MailProperties buildOpenReservationMailProperties(Reservation r) {
+    public void sendOpenReservationMail(Reservation r) {
         // Get book
-        Book b = bookService.getBookById(r.getBook().getBookId())
-                .orElseThrow(() -> new RuntimeException("Libro con id: "+r.getBook().getBookId()+" non trovato."));
+        Book b = bookService.getBookById(r.getBook().getId())
+                .orElseThrow(() -> new RuntimeException("Libro con id: "+r.getBook().getId()+" non trovato."));
 
         // Get customer
         Customer c = customerService.getById(r.getCustomer().getId())
@@ -237,13 +215,13 @@ public class ReservationService {
         String body = templateService.render("openReservation", context);
         String subject = "Book Reservation Confirmation: "+b.getTitle();
 
-        return new MailProperties(c.getEmail(), body, subject);
+        mailService.sendMail(new MailProperties(c.getEmail(), body, subject));
     }
 
-    public MailProperties buildCloseReservationMailProperties(Reservation r) {
+    public void sendCloseReservationMail(Reservation r) {
         // Get book
-        Book b = bookService.getBookById(r.getBook().getBookId())
-                .orElseThrow(() -> new RuntimeException("Libro con id: "+r.getBook().getBookId()+" non trovato."));
+        Book b = bookService.getBookById(r.getBook().getId())
+                .orElseThrow(() -> new RuntimeException("Libro con id: "+r.getBook().getId()+" non trovato."));
 
         // Get customer
         Customer c = customerService.getById(r.getCustomer().getId())
@@ -258,7 +236,7 @@ public class ReservationService {
         String body = templateService.render("closeReservation", context);
         String subject = "Book Reservation Confirmation: "+b.getTitle();
 
-        return new MailProperties(c.getEmail(), body, subject);
+        mailService.sendMail(new MailProperties(c.getEmail(), body, subject));
     }
 
     public static ReservationDTO fromReservation(Reservation reservation) {
@@ -269,7 +247,7 @@ public class ReservationService {
         BookDTO bookDTO = null;
         if (reservation.getBook() != null) {
             bookDTO = new BookDTO(
-                    reservation.getBook().getBookId(),
+                    reservation.getBook().getId(),
                     reservation.getBook().getIsbn(),
                     reservation.getBook().getTitle(),
                     reservation.getBook().getAuthor(),
@@ -300,4 +278,18 @@ public class ReservationService {
         );
     }
 
+    public void sendOpenReservationJMS(Reservation payload) {
+        // Set DTO
+        ReservationDTO reservationDTO = ReservationService.fromReservation(payload);
+
+        // Converts DTO in JSON message and sends
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            String reservationJson = objectMapper.writeValueAsString(reservationDTO);
+            jmsService.sendMessage(reservationJson);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
