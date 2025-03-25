@@ -3,6 +3,8 @@ package org.dirimo.biblioteca.resources.book;
 import lombok.RequiredArgsConstructor;
 import org.dirimo.biblioteca.resources.stock.Stock;
 import org.dirimo.biblioteca.resources.stock.StockService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -41,9 +43,10 @@ public class BookService {
         WebClient webClient = webClientBuilder.build();
         webClient.post()
                 .uri(RECOMMENDER_URL)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .bodyValue(catalog)
                 .retrieve()
-                .bodyToMono(Void.class)
+                .bodyToMono(String.class)
                 .doOnSuccess(response -> System.out.println("Libro inviato con successo"))
                 .doOnError(error -> System.err.println("Errore nell'invio del libro: " + error.getMessage()))
                 .subscribe();

@@ -2,7 +2,6 @@ package org.dirimo.biblioteca.resources.reservation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dirimo.biblioteca.mail.MailService;
 import org.dirimo.commonlibrary.event.GenericModuleEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 public class ReservationListener {
 
     private final ReservationService reservationService;
-    private final MailService mailService;
 
     @EventListener
     public void handleReservationEvent(GenericModuleEvent<Reservation> event) {

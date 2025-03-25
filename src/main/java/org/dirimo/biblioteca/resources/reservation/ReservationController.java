@@ -38,8 +38,6 @@ public class ReservationController {
                 .orElseThrow(() -> new RuntimeException("Prenotazione con id " + id + " non trovata."));
     }
 
-    // Get reservation by Customer ID
-
     // Add a new reservation
     @PostMapping("/")
     public Reservation create(@RequestBody Reservation reservation) {
@@ -70,6 +68,7 @@ public class ReservationController {
         reservationService.delete(id);
     }
 
+    // Close a reservation
     @PostMapping("/close/{id}")
     public Reservation close(@PathVariable Long id, @RequestBody CloseReservationAction action) {
         return reservationService.close(id, action.getDate());

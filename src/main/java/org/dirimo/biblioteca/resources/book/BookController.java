@@ -68,9 +68,9 @@ public class BookController {
     }
 
     // TESTING - Endpoint manuale per testare lo scheduler con Postman
-    /*@PostMapping("/trigger")
+    @PostMapping("/trigger")
     public String triggerUpdateCatalog() {
         bookService.sendCatalog();
-        return "Scheduler triggered manually!";
-    }*/
+        return "Catalog sent manually.";
+    }
 }

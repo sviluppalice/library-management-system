@@ -1,18 +1,16 @@
 package org.dirimo.biblioteca.jms;
 
 import lombok.RequiredArgsConstructor;
+import org.dirimo.biblioteca.jms.enumerated.JMSQueueType;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
 public class JMSService {
-
-    private static final String QUEUE_NAME = "reservation_history";
-
     private final JmsTemplate jmsTemplate;
-
-    public void sendMessage(String message) {
-        jmsTemplate.convertAndSend(QUEUE_NAME, message);
+    public void sendMessage(JMSQueueType queue, String message) {
+        jmsTemplate.convertAndSend(queue.getQueueName(), message);
     }
 }

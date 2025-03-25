@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dirimo.biblioteca.jms.JMSService;
+import org.dirimo.biblioteca.jms.enumerated.JMSQueueType;
 import org.dirimo.biblioteca.mail.MailProperties;
 import org.dirimo.biblioteca.mail.MailService;
 import org.dirimo.biblioteca.resources.book.Book;
@@ -287,7 +288,8 @@ public class ReservationService {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JavaTimeModule());
             String reservationJson = objectMapper.writeValueAsString(reservationDTO);
-            jmsService.sendMessage(reservationJson);
+            jmsService.sendMessage(JMSQueueType.QUEUE_RESERVATIONS, reservationJson);
+            jmsService.sendMessage(JMSQueueType.QUEUE_CATALOG, reservationJson);
         } catch (Exception e) {
             e.printStackTrace();
         }
