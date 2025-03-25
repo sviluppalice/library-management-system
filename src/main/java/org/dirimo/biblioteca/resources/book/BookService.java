@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.dirimo.biblioteca.resources.stock.Stock;
 import org.dirimo.biblioteca.resources.stock.StockService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,9 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final StockService stockService;
+    private final WebClient.Builder webClientBuilder;
+
+    private static final String RECOMMENDER_URL = "http://localhost:8080/Book/trigger";
 
     // Get all books
     public List<Book> getAll() {
@@ -28,6 +32,21 @@ public class BookService {
     // Get books by shelf ID
     public List<Book> getBooksByShelfId(Long shelfId) {
         return bookRepository.findBooksByShelfShelfId(shelfId);
+    }
+
+    // Send catalog - WEBFLUX
+    public void sendCatalog() {
+        List<Book> catalog = getAll();
+
+        WebClient webClient = webClientBuilder.build();
+        webClient.post()
+                .uri(RECOMMENDER_URL)
+                .bodyValue(catalog)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .doOnSuccess(response -> System.out.println("Libro inviato con successo"))
+                .doOnError(error -> System.err.println("Errore nell'invio del libro: " + error.getMessage()))
+                .subscribe();
     }
 
     // Add a new book

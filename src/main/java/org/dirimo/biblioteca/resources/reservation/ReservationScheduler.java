@@ -2,7 +2,6 @@ package org.dirimo.biblioteca.resources.reservation;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dirimo.biblioteca.mail.MailService;
 import org.dirimo.biblioteca.resources.reservation.enumerated.ReservationStatus;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,7 +17,6 @@ import java.util.List;
 public class ReservationScheduler {
 
     private final ReservationService reservationService;
-    private final MailService mailService;
 
     @Scheduled(cron = "0 0 9 * * *")//"0 * * * * *" ogni minuto - SOLO TESTING
     public void expiringReservationReminder() {

@@ -66,4 +66,11 @@ public class BookController {
     public void delete(@PathVariable Long id) {
         bookService.delete(id);
     }
+
+    // TESTING - Endpoint manuale per testare lo scheduler con Postman
+    /*@PostMapping("/trigger")
+    public String triggerUpdateCatalog() {
+        bookService.sendCatalog();
+        return "Scheduler triggered manually!";
+    }*/
 }
