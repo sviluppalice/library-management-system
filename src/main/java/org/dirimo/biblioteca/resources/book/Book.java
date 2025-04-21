@@ -54,5 +54,4 @@ public class Book extends BaseEntity {
 
     @Column(name = "descrizione", nullable = false)
     private String description;
-
 }
