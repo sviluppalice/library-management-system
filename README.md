@@ -4,7 +4,7 @@ This is a production-style REST API developed using **Java Spring Boot**, built 
 
 The app might not be completely finished because the focus shifted according to the priorities assigned to me by my senior.
 
-Also, this app has a commonLibrary and a machine learning microservice for recommendations that goes with it.
+Also, this app has a commonLibrary, a JMS Consumer and a machine learning microservice for recommendations that goes with it.
 
 ---
 
