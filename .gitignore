@@ -20,7 +20,9 @@ application-local.yml
 /out/
 
 # === Maven ===
-/.mvn/
+/.mvn/*
+!.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
 dependency-reduced-pom.xml
 release.properties
 
@@ -33,7 +35,8 @@ Thumbs.db
 /coverage/
 /jacoco.exec
 
-# === Files temporanei ===
+# === Temp files ===
 *.tmp
 *.swp
 *~
+``
