@@ -1,3 +1,5 @@
+## Library management system - backend java springboot project
+
 This is a production-style REST API developed using **Java Spring Boot**, built as part of my onboarding process in the company.
 
 The app might not be completely finished because the focus shifted according to the priorities assigned to me by my senior.
